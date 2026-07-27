@@ -17,19 +17,40 @@
     </placement>
     <dropShadows>no</dropShadows>
     <dropShadowsOnTiled>no</dropShadowsOnTiled>
+
+    <!-- Theme -->
     <theme>
         <name>matugen-labwc</name>
         <font name="Roboto" size="10" />
         <cornerRadius>0</cornerRadius>
+        <keepBorder>yes</keepBorder>
+        <dropShadows>yes</dropShadows>
+        <dropShadowsOnTiled>no</dropShadowsOnTiled>
     </theme>
 
+    <!-- Hover to focous window -->
+    <focus>
+        <followMouse>yes</followMouse>
+        <followMouseRequiresMovement>yes</followMouseRequiresMovement>
+        <raiseOnFocus>no</raiseOnFocus>
+    </focus>
 
     <!-- Key bindings -->
     <!-- W is the Super key (windows), A is the Alt key, S is the Shift key -->
     <!-- s and S are different, s is a alphabetic character -->
-
     <keyboard>
         <default />
+        <!--Magnifier -->
+        <keybind key="W-m">
+          <action name="ToggleMagnify"/>
+        </keybind>
+        <keybind key="W-Equal">
+          <action name="ZoomIn"/>
+        </keybind>
+        <keybind key="W-Minus">
+          <action name="ZoomOut"/>
+        </keybind>
+        <!-- Terminal -->
         <keybind key="W-Return">
             <action name="Execute" command="foot" />
         </keybind>
@@ -59,11 +80,18 @@
         <!-- screenshot tool -->
         <keybind key="W-s">
             <action name="Execute" command="sh -c 'killall rofi || ~/.config/rofi/screen-tool/screen-tool.sh'" />
-        </keybind>   
-        <!-- screenshot tool --> 
+        </keybind>
+        <!-- Rofi tube -->
         <keybind key="W-y">
-            <action name="Execute" command="sh -c 'killall rofi || python3 ~/.config/rofi/rofi-tube/rofi-tube.py'" />
-        </keybind>	    
+            <action name="Execute" command="sh -c 'killall rofi || ~/.config/rofi/rofi-tube/rofi-tube.sh'" />
+        </keybind>
+        <keybind key="W-p">
+            <action name="Execute" command="sh -c 'killall rofi || ~/.config/rofi/rofi-tube/rofi-tube.sh --show-playlist'" />
+        </keybind>
+        <!-- Emoji Picker -->
+        <keybind key="C-.">
+            <action name="Execute" command="sh -c 'killall rofi || ~/.config/rofi/emoji-picker/emoji-picker.sh'" />
+        </keybind>
         <!-- Lock screen -->
         <keybind key="W-l">
             <action name="Execute" command="loginctl lock-session" />
@@ -71,7 +99,7 @@
         <!-- Reload labwc config -->
         <keybind key="W-r">
             <action name="Reconfigure" />
-        </keybind>                
+        </keybind>
         <keybind key="A-Tab">
             <action name="NextWindow" />
         </keybind>
@@ -117,43 +145,68 @@
         <keybind key="W-Down">
             <action name="SnapToEdge" direction="down" />
         </keybind>
-
         <!-- You Change 5+, 5- to any number e.g. 10+, 10- for both volume and brightness -->
         <!-- Volume/microphone Control -->
         <keybind key="XF86AudioRaiseVolume">
-            <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh 5+'" />
+            <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh +5'" />
         </keybind>
         <keybind key="XF86AudioLowerVolume">
-            <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh 5-'" />
+            <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh -5'" />
         </keybind>
         <keybind key="XF86AudioMute">
             <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh --toggle-mute speaker'" />
         </keybind>
-        <keybind key="XF86AudioMicMute">
+        <keybind key="f7">
             <action name="Execute" command="sh -c '~/.config/waybar/scripts/volume_ctrl.sh --toggle-mute microphone'" />
         </keybind>
         <!-- Brightness Control -->
         <keybind key="XF86MonBrightnessUp">
-            <action name="Execute" command="sh -c '~/.config/waybar/scripts/brightness_ctrl.sh 5+'" />
+            <action name="Execute" command="sh -c '~/.config/waybar/scripts/brightness_ctrl.sh +5'" />
         </keybind>
         <keybind key="XF86MonBrightnessDown">
-            <action name="Execute" command="sh -c '~/.config/waybar/scripts/brightness_ctrl.sh 5-'" />
+            <action name="Execute" command="sh -c '~/.config/waybar/scripts/brightness_ctrl.sh -5'" />
         </keybind>
     </keyboard>
-    <!-- mouse binding -->
+
+    <!-- Mouse binding -->
+    <!-- Added mouse bindings to kill rofi -->
     <mouse>
         <default />
         <!-- Show apps menu on desktop right click -->
         <context name="Root">
             <mousebind button="Right" action="Press">
                 <action name="ShowMenu" menu="root-menu" />
+                <action name="Execute" command="pkill -x rofi" />
             </mousebind>
             <mousebind button="Left" action="Press">
-                <action name="None" />
+                <action name="Execute" command="pkill -x rofi" />
+                <action name="Unfocus" />
+            </mousebind>
+        </context>
+        <context name="Border">
+            <mousebind button="Left" action="Press">
+                <action name="Execute" command="pkill -x rofi" />
+                <action name="Focus" />
+                <action name="Raise" />
+            </mousebind>
+        </context>
+        <context name="Client">
+            <mousebind button="Left" action="Press">
+                <action name="Execute" command="pkill -x rofi" />
+                <action name="Focus" />
+                <action name="Raise" />
+            </mousebind>
+        </context>
+        <context name="Titlebar">
+            <mousebind button="Left" action="Press">
+                <action name="Execute" command="pkill -x rofi" />
+                <action name="Focus" />
+                <action name="Raise" />
             </mousebind>
         </context>
     </mouse>
-    <!-- workspace settings -->
+
+    <!-- Workspace settings -->
     <desktops number="4" />
     <desktops>
         <popupTime>1000</popupTime>
@@ -164,6 +217,8 @@
             <name>WS 4</name>
         </names>
     </desktops>
+
+    <!-- Input settings -->
     <libinput>
         <!-- TOUCHPAD: laptop trackpads -->
         <device category="touchpad">
@@ -188,10 +243,24 @@
             <leftHanded>no</leftHanded>
         </device>
     </libinput>
-    <!--windows rule -->
+
+    <!--Magnifier -->
+    <magnifier>
+        <width>400</width>
+        <height>400</height>
+        <initScale>2</initScale>
+        <increment>0.2</increment>
+        <useFilter>true</useFilter>
+    </magnifier>
+    
+    <!--Windows rule -->
     <windowRules>
         <windowRule title="Attention">
             <action name="ToggleAlwaysOnTop" />
+        </windowRule>
+        <!-- Mpv window without titlebar only border -->
+        <windowRule identifier="mpv">
+            <action name="SetDecorations" decorations="border" />
         </windowRule>
     </windowRules>
 </labwc_config>

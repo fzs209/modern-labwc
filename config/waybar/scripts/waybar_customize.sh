@@ -10,7 +10,6 @@ change_alpha="$waybar_config_dir/scripts/alpha_changer.py"
 
 # rofi menu styles
 rofi_vertical_menu="$HOME/.config/rofi/vertical_style_menu.rasi"
-rofi_vertical_menu_2="$HOME/.config/rofi/vertical_style_menu_2.rasi"
 rofi_horizontal_menu="$HOME/.config/rofi/horizontal_menu.rasi"
 
 # --- Main Menu ---
@@ -21,14 +20,9 @@ main_choice=$(echo -e "$main_options" | rofi -dmenu -mesg "<b>Waybar Customize</
 clip="$HOME/.config/rofi/clipboard/clipboard.rasi"
 clip_img="$HOME/.config/rofi/clipboard/clipboard_img.rasi"
 nightlight="$HOME/.config/rofi/nightlight/night-light.rasi"
-wifi="$HOME/.config/rofi/wifi/list.rasi"
+networkmanager="$HOME/.config/rofi/networkmanager/list.rasi"
 # nowplaying styles
 nowplay_style_dir="$HOME/.config/rofi/nowplaying/styles"
-style1="$nowplay_style_dir/style-1.rasi"
-style2="$nowplay_style_dir/style-2.rasi"
-style3="$nowplay_style_dir/style-3.rasi"
-style4="$nowplay_style_dir/style-4.rasi"
-style5="$nowplay_style_dir/style-5.rasi"
 
 rofi_position() {
     local loc_val=""
@@ -39,27 +33,26 @@ rofi_position() {
     top)
         loc_val="northeast"
         off_val="5px"
-        sed -i '32s|.*|    children:                    [ "input-wrapper", "listview" ];|' "$nightlight"
+        sed -i '/mainbox {/,/}/ s|^[[:space:]]*children:.*|    children:                    [ "input-wrapper", "listview" ];|' "$nightlight"
         ;;
     bottom)
         loc_val="southeast"
         off_val="-5px"
-        sed -i '32s|.*|    children:                    [ "listview", "input-wrapper" ];|' "$nightlight"
+        sed -i '/mainbox {/,/}/ s|^[[:space:]]*children:.*|    children:                    [ "listview", "input-wrapper" ];|' "$nightlight"
         ;;
     *)
         return 1
         ;;
     esac
 
-    local files=("$clip" "$clip_img" "$style1" "$style2" "$style3" "$style4" "$style5" "$nightlight" "$wifi")
+    local files=("$clip" "$clip_img" "$nightlight" "$networkmanager" "$nowplay_style_dir"/*.rasi)
 
     # Loop through files and apply sed
     for file in "${files[@]}"; do
-        if [[ -f "$file" ]]; then
-            # Replace location
-            sed -i "s/^\s*location:.*/    location:                    $loc_val;/g" "$file"
-            # Replace y-offset
-            sed -i "s/^\s*y-offset:.*/    y-offset:                    $off_val;/g" "$file"
+        if [[ -f "$file" ]]; then            
+            sed -i \
+                -e "s/^\s*location:.*/    location:                    $loc_val;/g" "$file" \
+                -e "s/^\s*y-offset:.*/    y-offset:                    $off_val;/g" "$file"
         fi
     done
 }
@@ -87,7 +80,8 @@ bar_position() {
 bar_style_menu() {
     layout_options=$(find "$waybar_layout_dir" -maxdepth 1 -type f -name "*.css" -printf "%f\n" | sort | sed 's/\.css$//')
     style_options="Bar Position\nTransparency\n$layout_options"
-    selected_option=$(echo -e "$style_options" | rofi -dmenu -mesg "<b>Select Options</b>" -theme "$rofi_vertical_menu_2")
+    selected_option=$(echo -e "$style_options" | rofi -dmenu -mesg "<b>Select Options</b>" -theme "$rofi_vertical_menu" \
+        -theme-str 'listview { lines: 7;}')
 
     case "$selected_option" in
     "Bar Position")
@@ -115,7 +109,8 @@ case "$main_choice" in
     color_files=$(find "$waybar_css_dir" -maxdepth 1 -type f -name "*.css" -printf "%f\n" | sort | sed 's/\.css$//')
     # Shows wallpaer color at top of list
     color_options="wallpaper\n$color_files"
-    selected_color=$(echo -e "$color_options" | rofi -dmenu -mesg "<b>Select Color Scheme</b>" -theme "$rofi_vertical_menu")
+    selected_color=$(echo -e "$color_options" | rofi -dmenu -mesg "<b>Select Color Scheme</b>" -theme "$rofi_vertical_menu" \
+    -theme-str 'window {height: 90%;} element {border-radius: 8px 0px 0px 8px;} listview { lines: 8; scrollbar: true;}')
 
     if [ -n "$selected_color" ]; then
         sed -i "s|@import \"colors/.*\";|@import \"colors/${selected_color}.css\";|" "$waybar_css"

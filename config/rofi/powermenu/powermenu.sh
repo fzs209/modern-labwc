@@ -2,7 +2,7 @@
 
 # Current Theme
 dir="$HOME/.config/rofi/powermenu/"
-theme='style-6'
+theme='style-4'
 
 # CMDs
 uptime="$(uptime -p | sed -e 's/up //g')"
@@ -18,6 +18,19 @@ logout=''
 yes=' Yes'
 no=' No'
 
+case "$theme" in
+style-2 | style-3 | style-4 | style-8)
+	yes=''
+	no=''
+	elem_align="0.5"
+	width="550px"
+	;;
+*)
+	elem_align="0.0"
+	width="450px"
+	;;
+esac
+
 # Rofi CMD
 rofi_cmd() {
 	rofi -dmenu \
@@ -28,10 +41,10 @@ rofi_cmd() {
 
 # Confirmation CMD
 confirm_cmd() {
-	rofi -theme-str 'window {location: center; anchor: center; fullscreen: false; width: 450px;}' \
+	rofi -theme-str "window {location: center; anchor: center; fullscreen: false; width: ${width};}" \
 		-theme-str 'mainbox {children: [ "message", "listview" ];}' \
 		-theme-str 'listview {columns: 2; lines: 1;}' \
-		-theme-str 'element-text {horizontal-align: 0.0;}' \
+		-theme-str "element-text {horizontal-align: ${elem_align};}" \
 		-theme-str 'textbox {horizontal-align: 0.5;}' \
 		-dmenu \
 		-p 'Confirmation' \

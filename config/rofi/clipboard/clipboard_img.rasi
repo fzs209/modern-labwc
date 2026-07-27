@@ -9,10 +9,6 @@ configuration {
 /*****----- Global Properties -----*****/
 @import                          "~/.config/rofi/shared/colors.rasi"
 
-* {
-    border-radius:               6px;
-}
-
 /*****----- Main Window -----*****/
 window {
     transparency:                "real";
@@ -25,9 +21,10 @@ window {
     enabled:                     true;
     cursor:                      "default";
     border:                      1px;
-    border-color:                @hover;
+    border-radius:               14px;
+    border-color:                @border;
     background-color:            @background;
-    padding:                     10px;
+    padding:                     15px;
 }
 
 /*****----- Main Box -----*****/
@@ -44,22 +41,21 @@ listview {
     enabled:                     true;
     columns:                     2;
     lines:                       3;
-    cycle:                       true;
+    cycle:                       false;
     dynamic:                     true;
     scrollbar:                   false;
     layout:                      vertical;
     reverse:                     false;
     fixed-height:                true;
     fixed-columns:               true;
-    spacing:                     10px; 
-    margin: 			         0px;
+    border-radius:               8px;
+    spacing:                     5px; 
     background-color:            transparent;
     cursor:                      "default";
     scrollbar:                   true;
 }
 scrollbar {
     handle-width:                3px ;
-    margin: 			         0px 0px 0px 2px;
     handle-color:                @foreground;
     background-color:            @background-alt;
 }
@@ -68,6 +64,7 @@ scrollbar {
 element {
     enabled:                     true;
     padding:                     0px; 
+    border-radius:               12px;
     cursor:                      pointer;
     orientation:                 vertical;
     background-color:            @background-alt;
@@ -79,13 +76,15 @@ element.selected  {
 }
 
 element-icon {
-    size:                         120px; 
+    size:                         164px; 
+    padding:                      -15px;
     background-color:             transparent;
     border-radius:                8px;
 }
 
 element-text {
+    enabled:                     false;
     font:                        "sans 0";
     background-color:            transparent;
-    text-color:                  transparent;
+    text-color:                  @foreground;
 }

@@ -12,28 +12,31 @@ configuration {
 window { 
     location:                    northeast;
     width:              550px;
+    height:             281px;
     x-offset:           -80px;
     y-offset:                    5px;
-    height:             300px;
     border-radius:      15px;
+    background-image:   url("/tmp/nowplaying/blurred_art.jpg", width);
     background-color:   @background;
     border:             1px;
-    border-color:       @hover;
-    padding:            15px;
+    border-color:       @border;
+    padding:            0px;
 }
 
 mainbox {
+    padding:            15px;
     orientation:        horizontal;  
-    children:           [ "art", "right-col" ];
+    children:           [ "album-art", "right-col" ];
+    background-color:       transparent;
     spacing:            20px;
-    background-color:   transparent;
+    background-image:      transparent;
 }
  
-art {
+album-art {
     width:              240px;
     border-radius:      12px;
-    background-image:   url("~/.config/rofi/nowplaying/album_art.png", height);
-    background-color:   @background-alt;
+    background-image:   url("/tmp/nowplaying/album_art.jpg", height);
+    background-color:   @hover;
 }
  
 right-col {
@@ -49,7 +52,7 @@ textbox-custom {
     vertical-align:     0.5; 
     horizontal-align:   0.0;
     markup:             true;
-    font:               "JetBrains Mono Nerd Font 12";
+    font:               "Inter 12";
     text-color:         @foreground;
     background-color:   transparent;
     padding:            10px;
@@ -70,17 +73,19 @@ listview {
 
 element {
     enabled:                     true;
-    padding:                     5px;
+    padding:                     0px;
+    border:                      5px;
     border-radius:               12px; 
     cursor:                      pointer;
-    background-color:            @background-alt;
+    background-color:            @hover;
     text-color:                  @foreground;
     orientation:                 horizontal;
 }
 
 element.selected  {
-    background-color:            @hover;
-    text-color:                  @foreground;
+    border:                      0px;
+    background-color:            @selected;
+    text-color:                  @background;
 }
 
 element-text {

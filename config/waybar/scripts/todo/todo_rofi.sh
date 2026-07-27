@@ -2,7 +2,6 @@
 
 theme_main="$todo_dir/todo.rasi"
 theme_input="$todo_dir/placeholder.rasi"
-theme_input2="$todo_dir/placeholder2.rasi"
 theme_choice="$todo_dir/horizontal_menu.rasi"
 
 temp_file=$(mktemp)
@@ -102,7 +101,7 @@ select_task_id() {
     local full_msg="${header}"$'\n\n'"${task_view}"
 
     local selection
-    selection=$(echo -e " Back" | rofi -dmenu -theme "$theme_input2" -mesg "$full_msg")
+    selection=$(echo -e " Back" | rofi -dmenu -theme "$theme_input" -mesg "$full_msg" -theme-str 'textbox {horizontal-align: 0.0;}')
 
     if [[ "$selection" == " Back" || -z "$selection" ]]; then
         echo "0"
@@ -148,6 +147,7 @@ delete_task() {
     if [[ "$num" -eq 0 ]]; then return; fi
     local idx=$((num - 1))
 
+    # Call shared function
     json_delete_task "$idx"
 }
 
@@ -157,6 +157,7 @@ toggle_status() {
     if [[ "$num" -eq 0 ]]; then return; fi
     local idx=$((num - 1))
 
+    # Call shared function
     json_toggle_task "$idx"
 }
 
@@ -238,7 +239,7 @@ settings_menu_rofi() {
         msg+='(4) Configure middle-click action'
 
         local choice
-        choice=$(echo " Back" | rofi -dmenu -theme "$theme_input2" -mesg "$msg")
+        choice=$(echo " Back" | rofi -dmenu -theme "$theme_input" -mesg "$msg" -theme-str 'textbox {horizontal-align: 0.0;}')
 
         case "$choice" in
         1) delete_all_tasks ;;

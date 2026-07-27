@@ -100,12 +100,12 @@ message {
     padding:                     15px;
     border:                      1px solid;
     border-radius:               15px;
-    border-color:                @hover;
+    border-color:                @border;
     background-color:            @background-alt;
     text-color:                  @foreground;
 }
 textbox {
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
     vertical-align:              0.5;
     horizontal-align:            0.5;
@@ -154,7 +154,7 @@ element {
     padding:                     45px 10px;
     border:                      1px solid;
     border-radius:               20px;
-    border-color:                @hover;
+    border-color:                @border;
     background-color:            @background-alt;
     text-color:                  @foreground;
     cursor:                      pointer;

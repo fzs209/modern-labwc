@@ -1,75 +1,36 @@
-/* --- Import Colors--*/
-@import "colors/wallpaper.css";
+/** Gtk-3.0 css **/
 
-window,
+infobar revealer box,
+messagedialog .titlebar,
 window.dialog,
 messagedialog,
 .dialog {
-    background-color: @window_bg_color;
-    color: @window_fg_color;
+    background-color: @card_bg_color;
+    color: @card_fg_color;
 }
 
-window.popup,
-window.osd,
-.popup {
-    background-color: transparent;
-    box-shadow: none;
-    border: none;
-}
-
-headerbar,
-.titlebar,
-window.dialog headerbar,
-messagedialog .titlebar {
-    background-color: @headerbar_bg_color;
-    background-image: none;
-    color: @headerbar_fg_color;
-    box-shadow: none;
-    border-bottom: 1px solid transparent; 
-}
-
-headerbar:backdrop,
-.titlebar:backdrop {
-    background-color: @window_bg_color;
-    background-image: none;
-    box-shadow: none;
-}
-
-menu,
-.menu,
-.context-menu,
-popover.background {
-    background-color: @popover_bg_color;
-    color: @popover_fg_color;
-    border-radius: 10px;
-    border: 1px solid @accent_selected_glass;
-}
-
-menuitem,
-menu item {
-    border-radius: 6px;
-    margin-bottom: 2px;
-    padding: 4px 8px;
-    border: none;
-    box-shadow: none;
-}
-
-menuitem:last-child,
-menu item:last-child {
-    margin-bottom: 0;
-}
-
-menuitem:hover,
-menu item:hover {
+infobar revealer box button,
+messagedialog button{
     background-color: @accent_hover_glass;
     color: @window_fg_color;
 }
 
+infobar revealer box button:hover,
+messagedialog button:hover{
+    background-color: @accent_selected_glass; 
+    color: @window_fg_color; 
+}
+
+menuitem:hover,
+menu item:hover,
 .sidebar row:hover,
 listbox row:hover,
 flowbox flowboxchild:hover,
 treeview.view:hover, 
-iconview:hover {
+iconview:hover,
+button.flat:hover,
+modelbutton:hover,
+popover.menu button:hover {
     background-color: @accent_hover_glass;
 }
 
@@ -82,12 +43,6 @@ iconview:selected {
     color: @window_fg_color;
 }
 
-button.flat:hover,
-modelbutton:hover,
-popover.menu button:hover {
-    background-color: @accent_hover_glass;
-}
-
 button:checked,
 button:active {
     background-color: @accent_selected_glass;
@@ -97,28 +52,4 @@ button:active {
 headerbar button.titlebutton:hover {
     background-color: alpha(@window_fg_color, 0.1); 
     box-shadow: none;
-}
-
-messagedialog button,
-window.dialog button,
-.dialog button,
-.message-dialog button {
-    background-color: @button_bg;
-    color: @window_fg_color;
-    border: none;
-    box-shadow: none;
-    background-image: none;
-}
-
-messagedialog button:hover,
-window.dialog button:hover,
-.dialog button:hover,
-.message-dialog button:hover {
-    background-color: @accent_bg_color; 
-    color: @accent_fg_color; 
-}
-
-messagedialog button:active,
-window.dialog button:active {
-    background-color: @accent_selected_glass;
 }

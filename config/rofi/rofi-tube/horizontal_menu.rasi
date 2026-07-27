@@ -16,9 +16,9 @@ window {
     location:                    center;
     anchor:                      center;
     width:                       450px;
-    border-radius:               8px;
+    border-radius:               14px;
     border:                      1px;
-    border-color:                @hover;
+    border-color:                @border;
     padding:                     10px;
     background-color:            @background;
     children:                    [ "mainbox" ];
@@ -32,7 +32,7 @@ mainbox {
 
 /*****----- Message -----*****/
 message {
-    padding:                     10px;
+    padding:                     10px 10px 0px 10px;
     background-color:            inherit;
 }
 textbox {
@@ -45,7 +45,7 @@ textbox {
 
 /*****----- Listview -----*****/
 listview {
-    columns:                     2;
+    columns:                     3;
     lines:                       1;
     cycle:                       true;
     scrollbar:                   false;
@@ -59,7 +59,7 @@ listview {
 /*****----- Elements -----*****/
 element {
     padding:                     10px;
-    border-radius:               8px;
+    border-radius:               10px;
     background-color:            @background-alt;
     text-color:                  @foreground;
     cursor:                      pointer;

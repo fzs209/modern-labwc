@@ -28,11 +28,11 @@ css_provider.load_from_string(
 window, .overlay { background: transparent; }
 
 .card {
-    background: @theme_bg_color;
-    color: @theme_fg_color;
+    background: @card_bg_color;
+    color: @card_fg_color;
     border-radius: 12px;
     padding: 24px;
-    border: 1px solid shade(@theme_bg_color, 0.85);
+    border: 1px solid @border;
 }
 
 label { font-weight: bold; margin-bottom: 5px; }

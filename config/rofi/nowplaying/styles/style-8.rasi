@@ -1,0 +1,136 @@
+/******--- configuration --*****/
+
+configuration {
+    show-icons:                 false;
+    hover-select: true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+}
+
+@import "~/.config/rofi/shared/colors.rasi"
+ 
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    northeast;
+    anchor:                      center;
+    fullscreen:                  false;   
+    width:                       300px;
+    height:                      310px;
+    x-offset:                    -80px;
+    y-offset:                    5px;
+    enabled:                     true;
+    cursor:                      "default";
+    background-color:            @background;
+    border:                      1px;
+    border-color:                @border;
+    border-radius:               35px;
+    padding:                     15px;
+}
+
+mainbox {
+    enabled:                     true;
+    padding:                     10px;
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "middle-wrapper", "bottom-wrapper" ];
+}
+
+/* Wrapper 1: [ art | icon ] */
+middle-wrapper {
+    enabled:                     true;
+    orientation:                 horizontal;
+    spacing:                     10px;
+    background-color:            transparent;
+    expand:                      true; 
+    children:                    [ "album-art", "top-message" ];
+}
+
+/* Wrapper 2: [ text | listview ] */ 
+/* Without listview the album-art doesn't render AND I don't know why.*/
+bottom-wrapper {
+    enabled:                     true;
+    orientation:                 horizontal;
+    spacing:                     10px;
+    background-color:            transparent;
+    expand:                      false;
+    children:                    [ "custom-text-box", "listview" ];
+}
+
+top-message {
+    enabled:                     true;
+    padding:                     0px;
+    background-color:            transparent;
+    children:                    [ "textbox-title" ];
+    expand:                      false;
+}
+
+textbox-title {
+    background-color:            transparent;
+    text-color:                  @foreground;
+    horizontal-align:            0.5;
+    str:                         "󰎆 "; 
+    font:                        "JetBrains Mono Nerd Font 18";
+}
+
+album-art {
+    enabled:                     true;
+    background-color:            @background-alt;
+    background-image:            url("/tmp/nowplaying/album_art.jpg", height);
+    border-radius:               20px;
+    expand:                      true; 
+}
+
+custom-text-box {
+    enabled:                     true;
+    expand:                      true;
+    padding:                     10px 0px 0px 0px;
+    background-color:            transparent;
+    children:                    [ "textbox-custom" ];
+}
+
+textbox-custom {
+    background-color:            transparent;
+    text-color:                  @foreground;
+    vertical-align:              0.5;
+    markup:                      true; 
+    font:                        "Inter 11";
+}
+
+/*****-----(Buttons) -----*****/
+listview {
+    enabled:                     false;
+    columns:                     3;
+    lines:                       1;
+    dynamic:                     true;
+    reverse:                     false;    
+    spacing:                     15px;
+    padding:                     10px 0px 0px 0px;
+    background-color:            transparent;
+    cursor:                      "default";
+    expand:                      false; 
+}
+
+element {
+    enabled:                     true;
+    padding:                     5px;
+    border-radius:               100%; 
+    cursor:                      pointer;
+    background-color:            @background-alt;
+    text-color:                  @foreground;
+    orientation:                 horizontal;
+}
+
+element.selected  {
+    background-color:            @hover;
+    text-color:                  @foreground;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    font:                        "JetBrains Mono Nerd Font 16";
+}

@@ -13,6 +13,7 @@ source "$HOME/.config/waybar/scripts/css_color_extraction.sh"
 # define colors
 expired_color="$secondary_color"
 seperator_color="$primary_color"
+ 
 
 ensure_json_exists() {
     if [ ! -f "$data_file" ]; then
@@ -38,7 +39,7 @@ update_state_index() {
     local tmp_file=$(mktemp)
     jq --argjson idx "$new_idx" '.state.current_index = $idx' "$data_file" >"$tmp_file" && mv "$tmp_file" "$data_file"
 }
-
+ 
 json_add_countdown() {
     local lbl="$1"
     local start="$2"
@@ -110,7 +111,7 @@ generate_waybar_output() {
         current_index=0
         update_state_index 0
     fi
-
+ 
     local rows_active=""
     local rows_expired=""
     local now_secs=$(date +%s)
@@ -136,7 +137,7 @@ generate_waybar_output() {
             [ "$pct" -lt 0 ] && pct=0
             left_info="$remaining_days days ($pct%)"
         fi
-
+ 
         local row="|$label|$end_date|$left_info"
 
         if [ "$is_expired" -eq 1 ]; then
@@ -145,16 +146,16 @@ generate_waybar_output() {
             rows_active+=$'\n'"A${row}"
         fi
     done < <(jq -r '.countdowns[] | "\(.label)\t\(.start)\t\(.end)\t\(.format)"' "$data_file")
-
+ 
     local raw_data="H|Labels|Date|Left"
     if [ -n "$rows_active" ]; then raw_data+="$rows_active"; fi
 
-    if [ -n "$rows_active" ] && [ -n "$rows_expired" ]; then
+     if [ -n "$rows_active" ] && [ -n "$rows_expired" ]; then
         raw_data+=$'\n'"G|_|_|_"
     fi
 
     if [ -n "$rows_expired" ]; then raw_data+="$rows_expired"; fi
-
+ 
     local tooltip_body
     tooltip_body=$(echo "$raw_data" | column -t -s '|' | awk -v ec="$expired_color" '
     BEGIN { }
@@ -178,13 +179,13 @@ generate_waybar_output() {
     ')
 
     local tooltip="<b><u>Countdowns</u></b>\n\n<tt>${tooltip_body}</tt>"
-
+ 
     IFS=$'\t' read -r label start_date end_date format < <(jq -r --argjson idx "$current_index" '.countdowns[$idx] | "\(.label)\t\(.start)\t\(.end)\t\(.format)"' "$data_file")
 
     local start_secs=$(date -d "$start_date" +%s 2>/dev/null)
     local end_secs=$(date -d "$end_date" +%s 2>/dev/null)
     local now_secs=$(date +%s)
-    local short_label=$(echo "$label" | sed -E "s/^(.{16}).+/\1.../")
+    local short_label=$(echo "$label" | sed -E "s/^(.{16}).+/\1.../") 
     local tooltip_json=$(echo -e "$tooltip" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
 
     if [ "$now_secs" -ge "$end_secs" ]; then
@@ -217,7 +218,7 @@ generate_waybar_output() {
 
     echo "{\"text\": \"$text\", \"tooltip\": \"$tooltip_json\", \"percentage\": $json_percentage}"
 }
-
+ 
 ensure_json_exists
 
 # --- Argument Handling ---

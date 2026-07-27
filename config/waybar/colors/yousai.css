@@ -1,12 +1,12 @@
 @define-color bar_bg #f5e7de;
 @define-color bar_fg #34302d;
-@define-color module_bg alpha(#ebdcd2, 0.72);
+@define-color module_bg alpha(#ebdcd2, 1.0);
 @define-color module_fg @bar_fg;
-@define-color hover_bg alpha(#d97742, 0.92);
+@define-color hover_bg alpha(#d97742, 1.0);
 @define-color hover_fg #f5e7de;
-@define-color border_color @hover_bg;
-@define-color special alpha(#bf8f60, 0.92);
+@define-color special alpha(#bf8f60, 1.0);
 @define-color special_fg #f5e7de;
 @define-color power #b23636;
 @define-color primary #d97742;
-@define-color tray alpha(#bf8f60, 0.72);
+@define-color tray alpha(#bf8f60, 1.0);
+@define-color border_color #e6d8cf;

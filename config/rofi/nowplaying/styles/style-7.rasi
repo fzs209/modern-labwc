@@ -1,0 +1,109 @@
+/******--- configuration --*****/
+
+configuration {
+    show-icons:                 false;
+    hover-select: true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+}
+
+@import "~/.config/rofi/shared/colors.rasi"
+ 
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    northeast;
+    anchor:                      center;
+    fullscreen:                  false;   
+    width:                       450px;
+    height:                      145px;
+    x-offset:                    -40px;
+    y-offset:                    5px;
+    enabled:                     true;
+    cursor:                      "default";
+    background-color:            @background; 
+    border:                      1px;
+    border-color:                @border;
+    border-radius:               0px;
+    padding:                     0px;
+}
+
+mainbox {
+    enabled:                     true;
+    padding:                     0px;
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "middle-wrapper", "listview" ];
+}
+
+middle-wrapper {
+    enabled:                     true;
+    orientation:                 horizontal;
+    spacing:                     4px;
+    background-color:            transparent;
+    expand:                      true; 
+    children:                    [ "album-art", "custom-text-box" ];
+}
+
+album-art {
+    enabled:                     true;
+    width:                       110px; 
+    height:                      110px; 
+    background-color:            @background-alt;
+    background-image:            url("/tmp/nowplaying/album_art.jpg", height);
+    border-radius:               0px;
+    expand:                      false; 
+}
+
+custom-text-box {
+    enabled:                     true;
+    expand:                      true;
+    padding:                     4px;
+    background-color:            transparent;
+    border-radius:               0px;
+    children:                    [ "textbox-custom" ];
+}
+
+textbox-custom {
+    background-color:            transparent;
+    text-color:                  @foreground;
+    markup:                      true;
+    font:                        "Inter 11";
+}
+
+/*****-----(Buttons) -----*****/
+listview {
+    enabled:                     true;
+    columns:                     3;
+    lines:                       1;
+    dynamic:                     true;
+    reverse:                     false;    
+    padding:                     0px;
+    background-color:            transparent;
+    cursor:                      "default";
+    expand:                      false; 
+}
+
+element {
+    enabled:                     true;
+    padding:                     4px;
+    border-radius:               0px; 
+    cursor:                      pointer;
+    background-color:            @background-alt;
+    text-color:                  @foreground;
+    orientation:                 horizontal;
+}
+
+element.selected  {
+    text-color:                  @foreground;
+    background-color:            @hover;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    font:                        "JetBrains Mono Nerd Font 12";
+}

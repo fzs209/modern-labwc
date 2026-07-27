@@ -7,10 +7,66 @@
 
  
 /** Imports a layout (style) for bar **/
-@import "layouts/standard.css";
+@import "layouts/pill.css";
 
 
 /** Sets bar background transparency **/
 window#waybar {
-            background: alpha(@bar_bg, 0.3);
+            background: alpha(@bar_bg, 1.0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

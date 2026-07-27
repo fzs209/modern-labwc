@@ -38,7 +38,7 @@ generate_categorized_list() {
         raw_data="H|DATE|EVENT"
         gap_str="G|_|_"
     fi
-
+	
     if [ -n "$rows_upcoming" ]; then raw_data+="$rows_upcoming"; fi
 
     if [ -n "$rows_upcoming" ] && [ -n "$rows_past" ]; then

@@ -6,6 +6,7 @@
     foreground: {{colors.on_surface.default.rgba}};
     selected: {{colors.primary.default.rgba}};
     hover: {{colors.primary.default.rgba | set_alpha: 0.2}};
+    border: {{colors.outline_variant.default.rgba}};
     active: {{colors.tertiary.default.rgba}};
     urgent: {{colors.error.default.rgba}};
 }

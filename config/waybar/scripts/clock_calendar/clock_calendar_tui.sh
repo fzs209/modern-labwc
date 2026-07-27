@@ -10,16 +10,16 @@ print_aligned_table() {
 
     local rows_upcoming=""
     local rows_past=""
-
+	
     while IFS=$'\t' read -r date desc status; do
         local row=""
-
+		
         if [[ "$show_id" == "true" ]]; then
             row="$i\t[$date]\t$desc"
         else
             row="[$date]\t$desc"
         fi
-
+		
         if [[ "$status" == "U" ]]; then
             rows_upcoming+="U_ACT\t$row\n"
         else
@@ -27,7 +27,7 @@ print_aligned_table() {
         fi
         ((i++))
     done < <(get_ordered_events)
-
+	
     local raw_data=""
     if [ -n "$rows_upcoming" ]; then raw_data+="$rows_upcoming"; fi
 
@@ -45,7 +45,7 @@ print_aligned_table() {
         echo -e "${term_secondary}   (No events found)${reset}"
         return
     fi
-
+	
     local header=""
     if [[ "$show_id" == "true" ]]; then
         header="ID\tDATE\tEVENT"
@@ -64,8 +64,8 @@ print_aligned_table() {
             echo -e "$content"
             echo -e "$content" | sed 's/./-/g'
         elif [[ "$tag" == "GAP_LINE" ]]; then
-            echo ""
-        elif [[ "$tag" == "U_ACT" ]]; then
+            echo "" 
+        elif [[ "$tag" == "U_ACT" ]]; then           
             echo -e "${term_primary}${content}${reset}"
         elif [[ "$tag" == "P_EXP" ]]; then
             echo -e "${term_secondary}${content}${reset}"

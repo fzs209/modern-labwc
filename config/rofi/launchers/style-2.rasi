@@ -69,7 +69,7 @@ window {
     padding:                     0px;
     border:                      1px solid;
     border-radius:               10px;
-    border-color:                @hover;
+    border-color:                @border;
     cursor:                      "default";
     /* Backgroud Colors */
     background-color:            @background-colour;
@@ -119,13 +119,13 @@ textbox-prompt-colon {
     enabled:                     true;
     padding:                     5px 0px;
     expand:                      false;
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
 }
 entry {
     enabled:                     true;
     padding:                     5px 0px;
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
     cursor:                      text;
     placeholder:                 "  Search...";
@@ -161,7 +161,7 @@ listview {
     enabled:                     true;
     columns:                     1;
     lines:                       8;
-    cycle:                       true;
+    cycle:                       false;
     dynamic:                     true;
     scrollbar:                   false;
     layout:                      vertical;

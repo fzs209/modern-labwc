@@ -40,9 +40,9 @@ input-wrapper {
     padding:                     20px;
     spacing:                     10px;
     background-color:            @background;
-    border-radius:               12px;
+    border-radius:               14px; 
     border:                      1px;
-    border-color:                @hover; 
+    border-color:                @border; 
     children:                    [ "message", "inputbar" ];
 }
 
@@ -81,7 +81,7 @@ entry {
     horizontal-align:            0.5;
     border:                      1px;
     border-radius:               8px;
-    border-color:                @hover;
+    border-color:                @border;
     padding:                     10px;
 }
 
@@ -101,13 +101,13 @@ listview {
 }
 
 element {
-    padding:                     12px 10px;
-    border-radius:               12px;
+    padding:                     10px;
+    border:                      1px;
+    border-color:                @border;
+    border-radius:               100%;
     background-color:            @background;
     text-color:                  @foreground;
     cursor:                      pointer;
-    border:                      1px;
-    border-color:                @hover;
 }
 
 element-text {
@@ -120,5 +120,5 @@ element-text {
 element selected {
     background-color:            @selected;
     text-color:                  @background;
-    border-color:                @hover;
+    border-color:                @selected;
 }

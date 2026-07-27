@@ -38,9 +38,9 @@ input-wrapper {
     padding:                     20px;
     spacing:                     10px;
     background-color:            @background;
-    border-radius:               12px;
+    border-radius:               14px; 
     border:                      1px;
-    border-color:                @hover; 
+    border-color:                @border; 
     children:                    [ "message"];
 }
 
@@ -62,38 +62,39 @@ textbox {
 
 /*****----- Listview (The Buttons) -----*****/
 listview {
+    enabled:                     true;
     columns:                     4;
     lines:                       1;
-    cycle:                       true;
-    scrollbar:                   false;
-    layout:                      vertical;
+    dynamic:                     true;
+    reverse:                     false;    
     spacing:                     15px;
-    fixed-height:                true;
-    fixed-columns:               true;
     background-color:            transparent;
-    text-color:                  @foreground;
-    border:                      0px;
+    cursor:                      "default";
+    expand:                      false; 
 }
 
 element {
-    padding:                     12px 10px;
-    border-radius:               12px;
-    background-color:            @background;
-    text-color:                  @foreground;
-    cursor:                      pointer;
+    enabled:                     true;
+    padding:                     10px;
     border:                      1px;
-    border-color:                @hover;
+    border-color:                @border;
+    border-radius:               100%;
+    cursor:                      pointer;
+    background-color:            @background-alt;
+    text-color:                  @foreground;
+    orientation:                 horizontal;
+}
+
+element selected {
+    border:                      0px;
+    background-color:            @selected;
+    text-color:                  @background;
 }
 
 element-text {
     background-color:            transparent;
     text-color:                  inherit;
-    horizontal-align:            0.5;
+    cursor:                      inherit;
     vertical-align:              0.5;
-}
-
-element selected {
-    background-color:            @selected;
-    text-color:                  @background;
-    border-color:                @hover;
+    horizontal-align:            0.5;
 }

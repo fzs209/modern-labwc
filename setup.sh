@@ -14,8 +14,8 @@ font_source="./fonts.tar.xz"
 font_dest="$HOME/.local/share"
 cursor_source="./Bibata-Modern-Ice.tar.xz"
 cursor_dest="$HOME/.local/share/icons"
-theme_source="./matugen-labwc"
-theme_dest="$HOME/.themes"
+theme_source="./themes.tar.xz"
+theme_dest="$HOME/.themes/"
 
 # Create a timestamped backup folder so we never overwrite previous backups
 timestamp=$(date +%Y%m%d-%H%M%S)
@@ -37,7 +37,7 @@ dependencies=(
     "dunst"
     "matugen"
     "foot"
-    "swww"
+    "awww"
     "swayidle"
     "hyprlock"
     "qt5-wayland"
@@ -61,10 +61,15 @@ dependencies=(
     "thunar"
     "xfce4-taskmanager"
     "jq"
+	"feh"			  # For screenshot tool 
+    "curl" 
+    "yt-dlp"
+    "socat" 
+    "mpv"             # For rofi-tube mpv control
     "netcat"          # For rofi-tube vlc control
     "python-watchdog" # For alarm daemon
     "alsa-utils"      # needed for "aplay" command used in scripts
-    "swayimg"         # for screenshot tool
+    "wtype"           # For auto-pasting of texts with clipboard manager
 
     # Fonts & Themes
     "otf-font-awesome"
@@ -193,7 +198,7 @@ sleep 0.5
 # --- Theme Installation Section ---
 mkdir -p "$theme_dest"
 echo -e "Copying labwc-theme to ${yellow}$theme_dest${nc}..."
-cp -r "$theme_source" "$theme_dest/"
+tar -xJf "$theme_source" -C "$theme_dest"
 sleep 0.5
 echo -e "${green}Themes copied successfully.${nc}"
 echo "-------------------------------------------------"

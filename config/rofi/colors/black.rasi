@@ -7,11 +7,12 @@
  **/
 
 * {
+border: rgba(26, 31, 36, 1);
     background:     rgba(0, 0, 0, 1.0);
     background-alt: rgba(16, 16, 16, 1.0);
     foreground:     rgba(255, 255, 255, 1.0);
     selected:       rgba(98, 174, 239, 1.0);
-    hover:          rgba(98, 174, 239, 0.21);
+    hover:          rgba(98, 174, 239, 0.25);
     active:         rgba(152, 195, 121, 1.0);
     urgent:         rgba(224, 107, 116, 1.0);
 }

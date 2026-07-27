@@ -1,78 +1,80 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 # Toggles between light and dark themes
 
-# Script to apply theme
-GTK_THEME_SWITCHER="$HOME/.config/labwc/gtk.sh"
+labwc_dir="$HOME/.config/labwc"
+labwc_rc_xml="$labwc_dir/rc.xml"
+labwc_theme_file="$labwc_dir/themerc-override"
+labwc_theme_dir="$labwc_dir/colors"
 
-GTK3_SETTINGS_FILE="$HOME/.config/gtk-3.0/settings.ini"
-GTK4_SETTINGS_FILE="$HOME/.config/gtk-4.0/settings.ini"
-wall_dir="$HOME/.config/labwc/wallpaper"
-waybar_css="$HOME/.config/waybar/style.css"
+# File that tracks system theme (light/dark)
+system_theme="$labwc_dir/system.theme"
 
-# labwc theme
-labwc_theme_file="$HOME/.config/labwc/themerc-override"
-labwc_theme_dir="$HOME/.config/labwc/colors"
-
-# Nowplaying 
-nowplaying_script="$HOME/.config/rofi/nowplaying/nowplaying.sh"
-source "$HOME/.config/rofi/nowplaying/overlay.sh"
+# Main script to reload running gtk3 applications
+# This also runs ~/.config/labwc/gtk.sh that helps in changing system theme like light/dark in chrome
+gtk_theme_reload="$HOME/.config/gtk-3.0/live_reload_gtk3.sh"
 
 # Notification icon color changer
 update_notification_icon_color="$HOME/.config/dunst/change_icon_color.sh"
 
-wall_cache=$(find "$wall_dir" -maxdepth 1 -type f -name "wallpaper.*")
+# Rofi tube
+update_playlist_theme="$HOME/.config/rofi/rofi-tube/rofi_alpha_changer.sh"
 
-# Check if GTK3 settings file exists
-if [ ! -f "$GTK3_SETTINGS_FILE" ]; then
-    echo "Error: $GTK3_SETTINGS_FILE not found."
-    exit 1
-fi
+# Source theme.sh.
+# This script defines the "apply_theme" function:
+#   apply_theme <light|dark> [skip_matugen_generation]
+#
+# Arguments:
+#   $1 - Theme mode ("light" or "dark").
+#   $2 - Optional. If set to "skip_matugen_generation" skips generating a new Matugen color scheme.
+source "$HOME/.config/waybar/scripts/theme.sh"
 
 # Toggle theme based on current setting in GTK3 file
-if grep -q "gtk-application-prefer-dark-theme=1" "$GTK3_SETTINGS_FILE"; then
+if [[ $(<"$system_theme") == "dark" ]]; then
     # Switch to light theme
-    sed -i 's/gtk-application-prefer-dark-theme=1/gtk-application-prefer-dark-theme=0/' "$GTK3_SETTINGS_FILE"
-    sed -i 's/^gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Light/' "$GTK3_SETTINGS_FILE"
-    matugen image "$wall_cache" -m "light"
-    sleep 0.2
-    # To triggre css refresh
-    touch "$waybar_css"
-    if [ -f "$GTK4_SETTINGS_FILE" ]; then
-        sed -i 's/gtk-application-prefer-dark-theme=true/gtk-application-prefer-dark-theme=false/' "$GTK4_SETTINGS_FILE"
-    fi
-    # Rofi nowplaying
-    apply_light_overlay
-    sed -i -E 's/trap apply_(light|dark)_overlay EXIT/trap apply_light_overlay EXIT/' "$nowplaying_script"
-    "$GTK_THEME_SWITCHER"
+    apply_theme "light"
+    # RUN THEME CHANGER
+    # Pass "no_color_change" to gtk_theme_reload script.
+    # This skips updating the color scheme in the GTK CSS file while still
+    # alternating between theme_1 and theme_2 to force GTK to reload the theme.
+    "$gtk_theme_reload" "no_color_change"
+    # updates rofi-tube playlist theme
+    "$update_playlist_theme"
     echo "Switched to light theme."
 else
     # Switch to dark theme
-    sed -i 's/gtk-application-prefer-dark-theme=0/gtk-application-prefer-dark-theme=1/' "$GTK3_SETTINGS_FILE"
-    sed -i 's/^gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Dark/' "$GTK3_SETTINGS_FILE"
-    matugen image "$wall_cache" -m "dark"
-    sleep 0.2
-    # To triggre css refresh
-    touch "$waybar_css"
-    if [ -f "$GTK4_SETTINGS_FILE" ]; then
-        sed -i 's/gtk-application-prefer-dark-theme=false/gtk-application-prefer-dark-theme=true/' "$GTK4_SETTINGS_FILE"
-    fi
-    # Rofi nowplaying
-    apply_dark_overlay
-    sed -i -E 's/trap apply_(light|dark)_overlay EXIT/trap apply_dark_overlay EXIT/' "$nowplaying_script"
-    "$GTK_THEME_SWITCHER"
+    apply_theme "dark"
+    # RUN THEME CHANGER
+    "$gtk_theme_reload" "no_color_change"
+    # updates rofi-tube playlist theme
+    "$update_playlist_theme"
     echo "Switched to dark theme."
 fi
 
-# Only matugen theme contails "General" 
+# Set labwc theme (light or dark) based on current GTK color scheme.
+gtk_css="$HOME/.config/gtk-4.0/gtk.css"
+if ! grep -qE '@import\s+"colors/wallpaper\.css"' "$gtk_css"; then
+    if [ "$labwc_theme_2" = true ]; then
+        if grep -qE '@import\s+"colors/(paper|lavender-pastel|everforest-light)\.css"' "$gtk_css"; then
+            sed -i '/<theme>/,/<\/theme>/ s|<name>.*</name>|<name>labwc-light</name>|' "$labwc_rc_xml"
+        else
+            sed -i '/<theme>/,/<\/theme>/ s|<name>.*</name>|<name>labwc-dark</name>|' "$labwc_rc_xml"
+        fi
+    fi
+fi
+
+# Only matugen theme contails "General"
 if grep -q "General" "$labwc_theme_file"; then
     cp "$labwc_theme_dir/wallpaper.color" "$labwc_theme_file"
     # Reloads labwc
     pgrep -x labwc >/dev/null && labwc --reconfigure
 fi
 
+# Qt Apps (this refreshes the running app theme)
+touch "$HOME/.config/"{qt5ct/qt5ct.conf,qt6ct/qt6ct.conf}
+
+# deletes the artfiles to make a refresh
+rm -f "/tmp/nowplaying/album_art.webp" "/tmp/nowplaying/hypr/album_art.webp" 2>/dev/null
 # updates the notification icon color
 "$update_notification_icon_color"
 exit 0
-
-
-

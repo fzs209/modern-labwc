@@ -1,0 +1,122 @@
+/*****----- Configuration -----*****/
+configuration {
+	show-icons: 		true;
+    hover-select: true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+    matching: "fuzzy";
+}
+
+/*****----- Global Properties -----*****/
+@import                          "~/.config/rofi/shared/colors.rasi"
+@import                          "~/.config/rofi/shared/fonts.rasi"
+
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       660px;
+    enabled:                     true;
+    border-radius:               14px;
+    border:                      1px;
+    border-color:                @border;
+    cursor:                      "default";
+    background-color:            @background;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    enabled:                     true;
+    spacing:                     0px;
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listview" ];
+}
+
+/*****----- Inputbar -----*****/
+inputbar {
+    enabled:                     true;
+    spacing:                     0px;
+    padding:                     15px 15px 0px 15px; 
+    background-color:            transparent;
+    text-color:                  @foreground;
+    orientation:                 horizontal;
+    children:                    [ "dummy", "entry" ];
+}
+
+dummy {
+    background-color: 		 transparent;
+}
+
+entry {
+    enabled:                     true;
+    expand:                      false;
+    width:                       628px;
+    padding:                     15px;
+    margin:                      0px;
+    border-radius:               8px;
+    background-color:            @background-alt;
+    text-color:                  inherit;
+    cursor:                      text;
+    tab-stops:                   [100%, right];
+    placeholder:                 " Search...\t[Shift + Enter for multiple selection]";
+    placeholder-color:           inherit;
+}
+
+/*****----- Listview -----*****/
+listview {
+    enabled:                     true;
+    columns:                     5;
+    lines:                       8;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   true;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    spacing:                     5px;
+    margin: 			         15px;
+    padding:                     5px;
+    border-radius: 		         8px;
+    background-color:            @background-alt;
+    text-color:                  @foreground;
+    cursor:                      "default";
+}
+scrollbar {
+    handle-width:                3px ;
+    margin: 			         0px 0px 0px 2px;
+    handle-color:                @foreground;
+    background-color:            @background-alt;
+}
+
+/*****----- Elements -----*****/
+element {
+    enabled:                     true;
+    spacing:                     0px;
+    padding:                     5px;
+    border-radius:               8px;
+    background-color:            @background;
+    text-color:                  @foreground;
+    cursor:                      pointer;
+}
+element.selected  {
+    background-color:            @hover;
+    text-color:                  @foreground;
+}
+element-icon {
+    size:                         30px;
+    background-color:             transparent;
+    text-color:                   @foreground;
+}
+element-text {
+    font:                       "Inter 18";
+    padding: 			         5px;
+    background-color:            transparent;
+    text-color:                  transparent;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0;
+}

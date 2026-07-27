@@ -61,7 +61,7 @@ generate_output() {
 
     # Handle Empty Case
     if [ "$count" -eq 0 ]; then
-        jq -n -c --arg icon "$ICON" '{"text": $icon, "tooltip": "no pins found."}'
+        jq -n -c --arg icon "$ICON" '{"text": $icon, "tooltip": "No pins found!"}'
         return
     fi
 
@@ -112,17 +112,19 @@ fi
 # DAEMON MODE: Watch for changes and update output
 generate_output
 
-# Fix for multiple instances of inotifywait and script
+# Kill any older instances of this script to prevent duplicates when Waybar reloads
+for pid in $(pgrep -f "pin_notes.sh"); do
+    if [[ $pid -ne $$ ]]; then
+        kill "$pid" 2>/dev/null
+    fi
+done
+# Cleanup child processes (inotifywait) when this script exits
 trap "kill 0" EXIT SIGTERM SIGINT
 
 # Start inotifywait loop and react to changes in the pins directory or state file
-inotifywait -m -q -e close_write -e create -e delete -e moved_to \
-    "$PINS_DIR" "$(dirname "$STATE_FILE")" | \
 while read -r directory events filename; do
     # Filter: Only react if it's a .txt file or the specific json state file
     if [[ "$filename" == "pin_state.json" ]] || [[ "$filename" == *.txt ]]; then
         generate_output
     fi
-done &
-
-wait
+done < <(inotifywait -m -q -e close_write -e create -e delete -e moved_to "$PINS_DIR" "$(dirname "$STATE_FILE")")

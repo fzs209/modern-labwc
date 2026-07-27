@@ -20,9 +20,9 @@ window {
     x-offset:                    -100px;
     y-offset:                    5px;
     enabled:                     true;
-    border-radius:               6px;
+    border-radius:               14px;
     border:                      1px;
-    border-color:                @hover;
+    border-color:                @border;
     cursor:                      "default";
     background-color:            @background;
 }
@@ -33,7 +33,21 @@ mainbox {
     spacing:                     0px;
     background-color:            transparent;
     orientation:                 vertical;
-    children:                    [ "inputbar", "listview" ];
+    children:                    [ "message", "inputbar", "listview" ];
+}
+
+/*****----- Message -----*****/
+message {
+    enabled:                     true;
+    padding:                     0px;
+    margin:                      0px;
+    background-color:            transparent;
+}
+
+textbox {
+    padding:                     15px 15px 0px 15px;
+    background-color:            transparent;
+    text-color:                  @foreground;
 }
 
 /*****----- Inputbar -----*****/
@@ -61,7 +75,8 @@ entry {
     background-color:            @background-alt;
     text-color:                  inherit;
     cursor:                      text;
-    placeholder:                 "   Search";
+    tab-stops:                   [100%, right];
+    placeholder:                 " Search...";
     placeholder-color:           inherit;
 }
 
@@ -69,10 +84,12 @@ textbox-prompt-colon {
     font:                        "Font Awesome 5 Free 14";
     enabled:                     true;
     expand:                      false;
-    str:                         "";
+    str:                         "";    
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
     padding:                     10px;
     margin:                      0px;
-    border-radius:               6px;
+    border-radius:               8px;
     background-color:            @active;
     text-color:                  @background;
 }
@@ -82,7 +99,7 @@ listview {
     enabled:                     true;
     columns:                     1;
     lines:                       8;
-    cycle:                       true;
+    cycle:                       false;
     dynamic:                     true;
     scrollbar:                   true;
     layout:                      vertical;
@@ -130,3 +147,4 @@ element-text {
     vertical-align:              0.5;
     horizontal-align:            0;
 }
+

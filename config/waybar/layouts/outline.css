@@ -3,7 +3,7 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: "JetBrains Mono", "Iosevka Term", Inter, Adwaita,  Roboto, Helvetica, Arial, sans-serif;
+    font-family: Inter, Adwaita,  Roboto, Helvetica, Arial, sans-serif;
     font-size: 13px;
     min-height: 0;
 }
@@ -16,7 +16,7 @@ window#waybar {
 tooltip {
     background-color: @bar_bg;
     color: @bar_fg;
-    border: 2px solid alpha(@hover_bg, 0.2);
+    border: 1px solid @border_color;
     border-radius: 8px;
 }
 tooltip label {
@@ -116,6 +116,8 @@ tooltip label {
     margin: 4px 2px 4px 2px;
     border-radius: 8px;
 }
+
+#pulseaudio.muted,
 #network.disconnected,
 #network.disabled {
     color: @power; 
@@ -179,12 +181,12 @@ tooltip label {
 
 #taskbar button.active {
     background: transparent;
-    border-bottom-color: @hover_bg;
+    border-bottom-color: @primary;
 }
 
 #taskbar button:hover {
     background: transparent;
-    border-bottom-color: alpha(@hover_bg, 0.65);
+    border-bottom-color: alpha(@primary, 0.65);
 }
 
 

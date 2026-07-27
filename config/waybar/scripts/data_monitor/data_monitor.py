@@ -154,19 +154,22 @@ def calculate_next_reset_date(reset_day):
     return datetime(year, month, actual_reset_day).date()
 
 
-# Signal Handling & Reconfiguration
-def trigger_reconfig():
+# Helper to send signals to the running background process
+def send_signal_to_monitor(sig, signal_name):
     if not os.path.exists(pid_file):
         print("No running instance found (PID file missing).")
         sys.exit(1)
     try:
         with open(pid_file, "r") as f:
             pid = int(f.read().strip())
-        os.kill(pid, signal.SIGUSR1)
-        print(f"Signal sent to process {pid} to reload configuration.")
+        os.kill(pid, sig)
+        print(f"Signal ({signal_name}) sent to process {pid}.")
     except ProcessLookupError:
         print("Process not running. Cleaning up PID file.")
-        os.remove(pid_file)
+        try:
+            os.remove(pid_file)
+        except Exception:
+            pass
     except Exception as e:
         print(f"Error sending signal: {e}")
     sys.exit(0)
@@ -187,6 +190,10 @@ def handle_reconfig_signal(sig, frame):
     )
 
 
+# Reloads style colors dynamically
+def handle_recolor_signal(sig, frame):
+    update_colors()
+
 def handle_exit(sig, frame):
     save_state()
     if os.path.exists(pid_file):
@@ -205,6 +212,7 @@ def write_pid():
 signal.signal(signal.SIGINT, handle_exit)
 signal.signal(signal.SIGTERM, handle_exit)
 signal.signal(signal.SIGUSR1, handle_reconfig_signal)
+signal.signal(signal.SIGUSR2, handle_recolor_signal)
 
 
 # Formatting for bytes
@@ -281,15 +289,18 @@ def check_daily_reset():
 
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1] == "--reconfig":
-        trigger_reconfig()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "--reconfig":
+            send_signal_to_monitor(signal.SIGUSR1, "SIGUSR1")
+        elif sys.argv[1] == "--recolor":
+            send_signal_to_monitor(signal.SIGUSR2, "SIGUSR2")
 
     global state
     ensure_dirs()
     write_pid()
     load_config()
     load_state()
-    update_colors()
+    update_colors()  # Load colors once at startup
 
     last_wifi_raw = state["last_proc_wifi"]
     last_eth_raw = state["last_proc_eth"]
@@ -331,7 +342,7 @@ def main():
 
         if tick_counter % 5 == 0:
             check_daily_reset()
-            update_colors()
+            # Note: update_colors() removed from here to eliminate 5-second polling disk reads
 
             today = datetime.now().date()
             next_reset_str = state.get("next_monthly_reset_date", "1970-01-01")

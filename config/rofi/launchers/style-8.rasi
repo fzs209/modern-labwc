@@ -34,7 +34,7 @@ window {
     enabled:                     true;
     border-radius:               25px;
     border:                      1px;
-    border-color:                @hover;
+    border-color:                @border;
     cursor:                      "default";
     background-color:            @background;
 }
@@ -94,7 +94,7 @@ listview {
     enabled:                     true;
     columns:                     1;
     lines:                       5;
-    cycle:                       true;
+    cycle:                       false;
     dynamic:                     true;
     scrollbar:                   false;
     layout:                      vertical;

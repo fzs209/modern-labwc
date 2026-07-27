@@ -1,0 +1,96 @@
+/***** Configuration *****/
+
+configuration {
+    show-icons: false;
+    hover-select: true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+}
+
+@import "~/.config/rofi/shared/colors.rasi"
+
+window { 
+    location:                    northeast;
+    width:              550px;
+    height:             280px;
+    x-offset:           -80px;
+    y-offset:                    5px;
+    border-radius:      40px;
+    background-color:   @background;
+    border:             1px;
+    border-color:       @border;
+    padding:            0px;
+}
+
+mainbox {
+    padding:            15px;
+    orientation:        horizontal;  
+    children:           [ "album-art", "right-col" ];
+    background-color:       transparent;
+    spacing:            20px;
+}
+ 
+album-art {
+    width:              240px;
+    border-radius:      30px;
+    background-image:   url("/tmp/nowplaying/album_art.jpg", height);
+    background-color:   @hover;
+}
+ 
+right-col {
+    orientation:        vertical;   
+    children:           [ "textbox-custom", "listview" ];
+    background-color:   transparent;
+    expand:             true;
+    spacing:            0px;
+}
+ 
+textbox-custom {
+    expand:             true;
+    vertical-align:     0.5; 
+    horizontal-align:   0.5;
+    markup:             true;
+    font:               "Inter 12";
+    text-color:         @foreground;
+    background-color:   transparent;
+    padding:            10px;
+}
+
+/*****-----(Buttons) -----*****/
+listview {
+    enabled:                     true;
+    columns:                     3;
+    lines:                       1;
+    dynamic:                     false;
+    reverse:                     false;    
+    spacing:                     15px;
+    background-color:            transparent;
+    cursor:                      "default";
+    expand:                      false; 
+}
+
+element {
+    enabled:                     true;
+    padding:                     0px;
+    border:                      5px;
+    border-radius:               12px; 
+    cursor:                      pointer;
+    background-color:            @hover;
+    text-color:                  @foreground;
+    orientation:                 horizontal;
+}
+
+element.selected  {
+    border:                      0px;
+    background-color:            @selected;
+    text-color:                  @background;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    font:                        "JetBrains Mono Nerd Font 16";
+}

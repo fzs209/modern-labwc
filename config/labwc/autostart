@@ -2,10 +2,13 @@
 aplay -q ~/.config/labwc/sound/desktop-login.wav >/dev/null 2>&1 &
 
 # Device plugged audio
-bash ~/.config/labwc/device-monitor.sh >/dev/null 2>&1 &
+~/.config/labwc/device-monitor.sh >/dev/null 2>&1 &
 
 # Alarm Daemon
 ~/.config/waybar/scripts/clock_calendar/alarm/alarm.sh start-daemon
+
+# Nowplaying daemon (this is very light weight and 0 cpu usage)
+~/.config/rofi/nowplaying/nowplaying.sh --daemon >/dev/null 2>&1 &
 
 # Set background, prefer awww if available as it has better transitions 
 if command -v awww >/dev/null 2>&1; then
@@ -21,12 +24,14 @@ fi
 /usr/bin/lxqt-policykit-agent >/dev/null 2>&1 &
 
 # Gtk Theme Refresh
-bash ~/.config/labwc/gtk.sh >/dev/null 2>&1 &
+~/.config/labwc/gtk.sh >/dev/null 2>&1 &
 
 # Clipboard
 wl-clip-persist --clipboard regular &
-wl-paste --type text --watch cliphist store &
-wl-paste --type image --watch cliphist store &
+# Watch for text and store it in text.db
+wl-paste --type text --watch cliphist -db-path "$HOME/.config/rofi/clipboard/text.db" store &
+# Watch for images and store them in image.db
+wl-paste --type image --watch cliphist -db-path "$HOME/.config/rofi/clipboard/image.db" store &
 
 # Waybar
 (sleep 0.5; waybar --log-level off >/dev/null 2>&1 &)
@@ -45,4 +50,3 @@ swayidle -w \
     before-sleep "~/.config/labwc/idle/sleep_ctrl.sh" \
     after-resume "~/.config/labwc/idle/brightness_ctrl.sh --fade-in" \
     >/dev/null 2>&1 &
-

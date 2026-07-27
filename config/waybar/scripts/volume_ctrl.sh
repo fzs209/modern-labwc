@@ -7,7 +7,7 @@
 # configuration
 icon_dir="$HOME/.config/dunst/volume-icon"
 # notification id
-notify_id=$(if pgrep -x "swaync" >/dev/null; then echo "-h string:x-canonical-private-synchronous:volume"; else echo "-r 3456"; fi)
+notify_id="string:x-canonical-private-synchronous:volume"
 
 # check for dependencies
 if ! command -v pamixer >/dev/null 2>&1; then
@@ -34,9 +34,8 @@ get_speaker_icon() {
     fi
 }
 
-# --- toggle mute logic  ---
-if [ "$1" == "--toggle-mute" ]; then
-    target="$2"
+toggle_device() {
+    target="$1"
 
     # toggle both (if no target is specified)
     if [ -z "$target" ]; then
@@ -87,17 +86,25 @@ if [ "$1" == "--toggle-mute" ]; then
             text="Speakers Active"
         fi
         vol_bar_val="-h int:value:$vol"
-
-    else
-        echo "Error: usage is --toggle-mute [optional: speaker|microphone]"
-        exit 1
     fi
 
-# --- volume adjustment (argument number+/-) ---
-elif [[ "$1" =~ ^[0-9]+[+-]$ ]]; then
+}
+
+# volume adjustment (argument +/-number)
+change_volume() {
+
+    input_arg="$1"
     # parse input
-    step="${1//[^0-9]/}" # remove everything that isn't a number
-    sign="${1//[0-9]/}"  # remove everything that isn't a sign
+    case "$input_arg" in
+    +*)
+        sign="+"
+        step="${input_arg#+}"
+        ;;
+    -*)
+        sign="-"
+        step="${input_arg#-}"
+        ;;
+    esac
 
     if [ "$sign" == "+" ]; then
         pamixer --increase "$step"
@@ -120,20 +127,40 @@ elif [[ "$1" =~ ^[0-9]+[+-]$ ]]; then
         urgency="critical"
     fi
 
-# --- help ---
+}
+
+if [ "$1" == "--toggle-mute" ]; then
+
+    case "$2" in
+    "speaker")
+        toggle_device "speaker"
+        ;;
+    "microphone")
+        toggle_device "microphone"
+        ;;
+    *)
+        toggle_device
+        ;;
+    esac
+
+elif [[ "$1" =~ ^[+-][0-9]+$ ]]; then
+    change_volume "$1"
+
+    # help
 else
+    script_name=$(basename "$0")
     echo "Usage:"
-    echo "  $(basename "$0") --toggle-mute              (Toggle Mute for BOTH Speaker & Mic)"
-    echo "  $(basename "$0") --toggle-mute speaker      (Toggle Mute for Speaker only)"
-    echo "  $(basename "$0") --toggle-mute microphone   (Toggle Mute for Microphone only)"
-    echo "  $(basename "$0") 5+                         (Increase volume by 5%)"
-    echo "  $(basename "$0") 10-                        (Decrease volume by 10%)"
+    echo "  "$script_name" --toggle-mute              (Toggle Mute for BOTH Speaker & Mic)"
+    echo "  "$script_name" --toggle-mute speaker      (Toggle Mute for Speaker only)"
+    echo "  "$script_name" --toggle-mute microphone   (Toggle Mute for Microphone only)"
+    echo "  "$script_name" +5                         (Increase volume by 5%)"
+    echo "  "$script_name" -10                        (Decrease volume by 10%)"
     exit 1
 fi
 
-# --- notification ---
+# notification
 if [ -n "$body" ]; then
-    notify-send -t 3000 $notify_id -u "$urgency" -i "$icon" "$text" "$body" $vol_bar_val
+    notify-send -t 3000 -h $notify_id -u "$urgency" -i "$icon" "$text" "$body" $vol_bar_val
 else
-    notify-send -t 3000 $notify_id -u "$urgency" -i "$icon" "$text" $vol_bar_val
+    notify-send -t 3000 -h $notify_id -u "$urgency" -i "$icon" "$text" $vol_bar_val
 fi

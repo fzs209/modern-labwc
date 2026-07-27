@@ -7,7 +7,7 @@
   {
       "layer": "top",
       "position": "top",
-      "height": 38,
+      "height": 40,
       "spacing": 0,
       "margin-top": 0,
       "margin-bottom": 0,
@@ -24,7 +24,7 @@
 
       "modules-center": ["wlr/taskbar"],
 
-      "modules-right": ["keyboard-state", "custom/timer", "custom/countdown", "custom/data-monitor", "memory",  
+      "modules-right": ["keyboard-state", "custom/timer", "custom/countdown", "custom/data-monitor", "memory",
 		         "group/group-tools", "pulseaudio", "backlight", "network", "tray", 
                           "custom/notification", "custom/clock", "custom/power"],
 
@@ -54,6 +54,8 @@
 
       "idle_inhibitor":
       {
+          "tooltip-format-activated": "Idle Inhibitor\nOn",
+          "tooltip-format-deactivated": "Idle Inhibitor\nOff",
           "format": "{icon}",
           "format-icons":
           {
@@ -77,7 +79,7 @@
           "format-alt": "  {alt}",
           "interval": 10,
           "tooltip": true,
-          "on-click-right": "killall rofi || bash ~/.config/waybar/scripts/clock_calendar/choose.sh",
+          "on-click-right": "killall rofi || ~/.config/waybar/scripts/clock_calendar/choose.sh",
           "on-scroll-up": "$HOME/.config/waybar/scripts/clock_calendar/clock_calendar.sh --scroll-up",
           "on-scroll-down": "$HOME/.config/waybar/scripts/clock_calendar/clock_calendar.sh --scroll-down"
       },
@@ -86,19 +88,19 @@
       {
           "device": "acpi_video0", // Assuming acpi_video0, adjust if needed
           "tooltip": true,
-          "tooltip-format": "{percent}%\nNightlight",
+          "tooltip-format": "Brightness {percent}%\nNightlight",
           "format": "<big>{icon}</big>",
           "format-icons": ["󰃚 ", "󰃞 ", "󰃝 ", "󰃟 ", "󰃠 "],
           "on-scroll-up": "brightnessctl s +5%",
           "on-scroll-down": "brightnessctl s 5%-",
-          "on-click": "killall rofi || bash ~/.config/rofi/nightlight/night-light.sh"
+          "on-click": "killall rofi || ~/.config/rofi/nightlight/night-light.sh"
       },
 
       "pulseaudio":
       {
           "format": "<big>{icon}</big>",
           "tooltip": true,
-          "tooltip-format": "{volume}%\nNowplaying",
+          "tooltip-format": "Volume {volume}%\nNowplaying",
           "format-bluetooth": "{volume}% {icon}",
           "format-bluetooth-muted": "{icon} {format_source}",
           "format-muted": " {format_source}",
@@ -114,8 +116,8 @@
               "car": "",
               "default": ["󰕿", "󰖀", "󰕾"]
           },
-          "on-click": "killall rofi || bash ~/.config/rofi/nowplaying/nowplaying.sh 2>/dev/null",
-          "on-click-right": "bash ~/.config/waybar/scripts/volume_ctrl.sh --toggle-mute 2>/dev/null", //this toggles mute for both speaker and microphone
+          "on-click": "killall rofi || ~/.config/rofi/nowplaying/nowplaying.sh 2>/dev/null",
+          "on-click-right": "~/.config/waybar/scripts/volume_ctrl.sh --toggle-mute 2>/dev/null", //this toggles mute for both speaker and microphone
           "on-click-middle": "pavucontrol"
       },
 
@@ -139,7 +141,7 @@
           "tooltip-format-ethernet": "  {ifname}\nIP: {ipaddr}/{cidr}",
           "tooltip-format-disconnected": "Disconnected",
           "format-icons": ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 ", "󰤨 "],
-          "on-click": "killall rofi || bash ~/.config/rofi/wifi/wifi.sh",
+          "on-click": "killall rofi || ~/.config/rofi/networkmanager/networkmanager.sh",
           "on-click-right": "nm-connection-editor"
       },
 
@@ -150,7 +152,7 @@
           "format": "\u00a0{}",
           "exec": "~/.config/waybar/scripts/todo/todo.sh",
           "on-double-click": "~/.config/waybar/scripts/todo/todo.sh --mark-done",
-          "on-click-right": "killall rofi || bash ~/.config/waybar/scripts/todo/todo.sh --show-rofi",
+          "on-click-right": "killall rofi || ~/.config/waybar/scripts/todo/todo.sh --show-rofi",
           "on-click-middle": "~/.config/waybar/scripts/todo/todo.sh --middle-click",
           "return-type": "json",
           "interval": 5,
@@ -159,12 +161,12 @@
 
       "custom/pins":
       {
-          "exec": "bash ~/.config/waybar/scripts/pin_notes/pin_notes.sh",
+          "exec": "~/.config/waybar/scripts/pin_notes/pin_notes.sh",
           "return-type": "json",
           "format": "{}",
           "on-click": "xdg-open ~/pins",
-          "on-scroll-up": "bash ~/.config/waybar/scripts/pin_notes/pin_notes.sh --up",
-          "on-scroll-down": "bash ~/.config/waybar/scripts/pin_notes/pin_notes.sh --down"
+          "on-scroll-up": "~/.config/waybar/scripts/pin_notes/pin_notes.sh --up",
+          "on-scroll-down": "~/.config/waybar/scripts/pin_notes/pin_notes.sh --down"
       },
 
       "custom/countdown":
@@ -173,7 +175,7 @@
           "return-type": "json",
           "format": "{}",
           "interval": 3600,
-          "on-click-right": "killall rofi || bash ~/.config/waybar/scripts/countdown/countdown.sh --show-rofi",
+          "on-click-right": "killall rofi || ~/.config/waybar/scripts/countdown/countdown.sh --show-rofi",
           "on-scroll-up": "~/.config/waybar/scripts/countdown/countdown.sh --scroll-up",
           "on-scroll-down": "~/.config/waybar/scripts/countdown/countdown.sh --scroll-down"
       },
@@ -184,7 +186,7 @@
           "return-type": "json",
           "format": "{}",
           "on-click": "killall rofi || python3 ~/.config/waybar/scripts/timer/waybar_timer.py --current toggle-pause",
-          "on-click-right": "killall rofi || bash ~/.config/waybar/scripts/timer/time_input.sh",
+          "on-click-right": "killall rofi || ~/.config/waybar/scripts/timer/time_input.sh",
           "on-click-middle": "python3 ~/.config/waybar/scripts/timer/waybar_timer.py --current reset",
           "on-scroll-up": "python3 ~/.config/waybar/scripts/timer/waybar_timer.py --toggle-view",
           "on-scroll-down": "python3 ~/.config/waybar/scripts/timer/waybar_timer.py --toggle-view"
@@ -195,7 +197,7 @@
           "exec": "python3 ~/.config/waybar/scripts/data_monitor/data_monitor.py",
           "return-type": "json",
           "on-click": "killall rofi",
-          "on-click-right": "killall rofi || bash ~/.config/waybar/scripts/data_monitor/data_monitor.sh"
+          "on-click-right": "killall rofi || ~/.config/waybar/scripts/data_monitor/data_monitor.sh"
       },
 
       "custom/notification":
@@ -229,8 +231,8 @@
           "format": "<big>\u00a0</big>",
           "tooltip": true,
           "tooltip-format": "Menu\nRight click to customize",
-          "on-click": "killall rofi 2>/dev/null || bash ~/.config/rofi/launchers/launcher.sh 2>/dev/null",
-          "on-click-right": "killall rofi 2>/dev/null || bash ~/.config/waybar/scripts/customize.sh 2>/dev/null"
+          "on-click": "killall rofi 2>/dev/null || ~/.config/rofi/launchers/launcher.sh 2>/dev/null",
+          "on-click-right": "killall rofi 2>/dev/null || ~/.config/waybar/scripts/customize.sh 2>/dev/null"
       },
 
       "custom/chrome":
@@ -265,8 +267,8 @@
           "format": "",
           "tooltip": true,
           "tooltip-format": "Youtube",
-          "on-click": "killall rofi 2>/dev/null || python3 ~/.config/rofi/rofi-tube/rofi-tube.py 2>/dev/null",
-          "on-click-right": "g4music"
+          "on-click": "killall rofi 2>/dev/null || ~/.config/rofi/rofi-tube/rofi-tube.sh 2>/dev/null",
+          "on-click-right": "killall rofi 2>/dev/null || ~/.config/rofi/rofi-tube/rofi-tube.sh --show-playlist 2>/dev/null"
       },
 
       "custom/thunar":
@@ -301,7 +303,7 @@
           "format": "",
           "tooltip": true,
           "tooltip-format": "Clipboard",
-          "on-click": "killall rofi 2>/dev/null || bash ~/.config/rofi/clipboard/clipboard.sh 2>/dev/null"
+          "on-click": "killall rofi 2>/dev/null || ~/.config/rofi/clipboard/clipboard.sh 2>/dev/null"
       },
 
       "custom/theme-switcher":
@@ -309,7 +311,7 @@
           "format": "<big>󰔎\u00a0</big>",
           "tooltip": true,
           "tooltip-format": "Light/Dark",
-          "on-click": "bash ~/.config/waybar/scripts/toggle-theme.sh 2>/dev/null"
+          "on-click": "~/.config/waybar/scripts/toggle-theme.sh 2>/dev/null"
       },
 
       "custom/snip":
@@ -317,7 +319,7 @@
           "format": "",
           "tooltip": true,
           "tooltip-format": "Screenshot",
-          "on-click": "killall rofi 2>/dev/null || bash ~/.config/rofi/screen-tool/screen-tool.sh 2>/dev/null"
+          "on-click": "killall rofi 2>/dev/null || ~/.config/rofi/screen-tool/screen-tool.sh 2>/dev/null"
       },
 
       //// Powermenu
@@ -327,6 +329,6 @@
           "format": "<b></b>",
           "tooltip": true,
           "tooltip-format": "Powermenu",
-          "on-click": "killall rofi 2>/dev/null || bash ~/.config/rofi/powermenu/powermenu.sh 2>/dev/null"
+          "on-click": "killall rofi 2>/dev/null || ~/.config/rofi/powermenu/powermenu.sh 2>/dev/null"
       }
   }

@@ -1,5 +1,4 @@
-/******--- configuration --*****/
-
+/***** Configuration *****/
 configuration {
     show-icons:                 false;
     hover-select: true;
@@ -7,91 +6,59 @@ configuration {
     me-accept-entry: "MousePrimary";
 }
 
+/* Import your colors */
 @import "~/.config/rofi/shared/colors.rasi"
- 
-/*****----- Main Window -----*****/
+
+/***** Main Window *****/
 window {
-    transparency:                "real";
     location:                    northeast;
     anchor:                      center;
-    fullscreen:                  false;   
-    width:                       500px;
-    height:                      360px;
-    x-offset:                    -40px;
+    width:                       300px;
+    height:                      300px;
+    x-offset:                    -110px;
     y-offset:                    5px;
-    enabled:                     true;
-    cursor:                      "default";
-    background-image:            url("~/.config/rofi/nowplaying/album_art.png", width);
-    background-color:            @background; 
+    background-image:            url("/tmp/nowplaying/album_art.jpg", height);    
+    border-radius:               35px;
     border:                      1px;
-    border-color:                @hover;
-    border-radius:               8px;
-    padding:                     0px;
+    border-color:                @border;    
+    cursor:                      "default"; 
+    background-color:            @background; 
 }
 
+/***** Main Container (Overlay) *****/
 mainbox {
-    background-color:            transparent;
-    spacing:                     20px;
-    background-image:      linear-gradient(135deg, rgba(255,255,255,70%), rgba(245,245,245,85%), rgba(255,255,255,90%));
+    background-color:                  transparent;
     orientation:                 vertical;
-    children:                    [ "top-message", "middle-wrapper", "listview" ];
+    spacing:                     0px;
+    padding:                     10px 20px; 
+    background-image:            transparent;
+    children:                    [ "textbox-title", "textbox-custom", "listview" ];
 }
-
-top-message {
-    enabled:                     true;
-    padding:                     15px 0px 0px 0px;
-    background-color:            transparent;
-    children:                    [ "textbox-msg" ];
+ 
+textbox-title {
     expand:                      false;
-}
-
-textbox-msg {
-    expand: true;
     background-color:            transparent;
-    text-color:                  #000000;
+    text-color:                  @foreground;
     horizontal-align:            0.5;
-    vertical-align:              0.5;
     str:                         "  Now Playing"; 
-    font:                        "JetBrains Mono Nerd Font 14";
+    font:                        "JetBrains Mono Nerd Font Bold 14";
+    padding:                     0px 0px 10px 0px;
 }
 
-middle-wrapper {
-    enabled:                     true;
-    orientation:                 horizontal;
-    padding:                     0px 15px 15px 15px;
-    spacing:                     20px;
-    background-color:            transparent;
-    expand:                      true; 
-    children:                    [ "album-art", "custom-text-box" ];
-}
-
-album-art {
-    enabled:                     true;
-    width:                       170px; 
-    height:                      170px; 
-    background-color:            @background-alt;
-    background-image:            url("~/.config/rofi/nowplaying/album_art.png", height);
-    border-radius:               12px;
-    expand:                      false; 
-}
-
-custom-text-box {
-    enabled:                     true;
-    expand:                      true;
-    padding:                     20px;
-    background-color:     rgba(255, 255, 255, 0.6);  
-    border-radius:               12px;
-    children:                    [ "textbox-custom" ];
-}
-
+/***** Middle: Song Info *****/
 textbox-custom {
-    background-color:            transparent;
-    text-color:                  #000000;
+    expand:                      true;       
+    background-color:            transparent;  
+    border-radius:               20px;
+    border:                      0px;
+    border-color:                @selected;
+    margin:                      0px 0px 10px 0px;
+    padding:                     20px; 
+    text-color:                  @foreground;
     vertical-align:              0.5;
-    horizontal-align:            0.5;
-    markup:                      true; 
-    font:                        "JetBrains Mono Nerd Font 12";
-    str:                         "Loading...";
+    horizontal-align:            0.5; 
+    markup:                      true;     
+    font:                        "Inter 12";
 }
 
 /*****-----(Buttons) -----*****/
@@ -100,8 +67,7 @@ listview {
     columns:                     3;
     lines:                       1;
     dynamic:                     true;
-    reverse:                     false;  
-    padding:                     0px 15px 15px 15px;  
+    reverse:                     false;    
     spacing:                     15px;
     background-color:            transparent;
     cursor:                      "default";
@@ -110,17 +76,18 @@ listview {
 
 element {
     enabled:                     true;
-    padding:                     5px;
+    padding:                     0px;
     border-radius:               100%; 
     cursor:                      pointer;
-    background-color:            @background-alt;
+    background-color:            transparent;
     text-color:                  @foreground;
     orientation:                 horizontal;
 }
 
 element selected {
-    background-color:            @selected;
-    text-color:                  @background;
+    border:                      0px;
+    background-color:            @hover;
+    text-color:                  @foreground;
 }
 
 element-text {
@@ -129,5 +96,5 @@ element-text {
     cursor:                      inherit;
     vertical-align:              0.5;
     horizontal-align:            0.5;
-    font:                        "JetBrains Mono Nerd Font 16";
+    font:                        "JetBrains Mono Nerd Font 18";
 }

@@ -1,7 +1,7 @@
 [global]
     monitor = 0
     follow = none
-    width = 400
+    width = 450
     height = (0,250)
     origin = "top-right"
     alignment = "left"
@@ -12,8 +12,8 @@
     horizontal_padding = 16
     text_icon_padding = 16
     icon_position = "left"
-    min_icon_size = 64
-    max_icon_size = 64
+    min_icon_size = 32
+    max_icon_size = 96
     progress_bar = true
     progress_bar_height = 7
     progress_bar_frame_width = 1
@@ -22,10 +22,10 @@
     progress_bar_corners = all
     progress_bar_max_width = 400
     separator_height = 2
-    frame_width = 1
-    frame_color = "{{colors.primary.default.hex}}33"
+    frame_width = 0
+    frame_color = "{{colors.outline_variant.default.hex}}"
     separator_color = "{{colors.primary.default.hex}}"
-    corner_radius = 12
+    corner_radius = 14
     gap_size = 10
     line_height = 4
     notification_limit = 0

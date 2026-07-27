@@ -18,11 +18,15 @@ secondary_color="#ff7a93" # Flamingo Pink
 # Find the active color file from style.css
 imported_file=$(sed -n 's/.*@import "colors\/\(.*\)";.*/\1/p' "$style_file" | head -n 1)
 
+get_color() {
+    grep "@define-color $1" "$full_color_path" | sed -n 's/.*#\([0-9a-fA-F]\{6\}\).*/#\1/p'
+}
+
 if [ -n "$imported_file" ]; then
     full_color_path="$waybar_config_dir/colors/$imported_file"
     if [ -f "$full_color_path" ]; then
-        css_primary=$(grep "@define-color primary" "$full_color_path" | awk '{print $3}' | tr -d ';')
-        css_secondary=$(grep "@define-color power" "$full_color_path" | awk '{print $3}' | tr -d ';')
+        css_primary=$(get_color "primary")
+        css_secondary=$(get_color "power")
         if [ -n "$css_primary" ]; then primary_color="$css_primary"; fi
         if [ -n "$css_secondary" ]; then secondary_color="$css_secondary"; fi
     fi

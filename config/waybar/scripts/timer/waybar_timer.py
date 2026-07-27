@@ -7,16 +7,16 @@ import argparse
 import os
 import re
 import subprocess
+import select
 
 # Configuration
-
-home_dir = os.path.expanduser("~")
-config_dir = os.path.join(home_dir, ".config", "waybar", "scripts", "timer")
+config_dir = os.path.dirname(os.path.realpath(__file__))
 state_file = os.path.join(config_dir, "state.json")
-script_dir = os.path.dirname(os.path.realpath(__file__))
-sound_file = os.path.join(script_dir, "beep.wav")
+tmp_state_file = os.path.join(config_dir, "state.json.tmp")
+fifo_path = os.path.join(config_dir, "timer.fifo")
+sound_file = os.path.join(config_dir, "beep.wav")
 
-# Notification ID's
+# Notification IDs
 notify_id_sw = "string:x-canonical-private-synchronous:stopwatch"
 notify_id_cd = "string:x-canonical-private-synchronous:countdown"
 notify_id_pom = "string:x-canonical-private-synchronous:pomodoro"
@@ -30,7 +30,7 @@ break_icon = "<big>\u2009\u2009</big>"
 pom_icon = "<big></big>"
 
 #######################################
-# Functions ###########################
+# State helpers                       #
 #######################################
 
 
@@ -71,17 +71,18 @@ def load_state():
 
 
 def save_state(state):
+    """Atomic write via temporary file and rename."""
     try:
-        if not os.path.exists(config_dir):
-            os.makedirs(config_dir)
-        with open(state_file, "w") as f:
+        os.makedirs(config_dir, exist_ok=True)
+        with open(tmp_state_file, "w") as f:
             json.dump(state, f, indent=4)
+        os.replace(tmp_state_file, state_file)
     except IOError:
         pass
 
 
 #########################################
-# Sound and Notification ################
+# Sound and Notification                #
 #########################################
 
 
@@ -123,14 +124,13 @@ def send_notification(notif_id, title, body="", level="normal"):
 
 
 ##############################################
-# Function to handle time ###################
-#############################################
+# Time helpers                              #
+##############################################
 
 
-# Parses time argument string into seconds.
 def parse_time(arg):
     if ":" in arg:
-        parts = arg.split(":")  # split by colon (eg. "1:30:00" -> ["1","30","00"])
+        parts = arg.split(":")
         try:
             parts = [int(p) for p in parts]
         except ValueError:
@@ -139,7 +139,6 @@ def parse_time(arg):
             return parts[0] * 3600 + parts[1] * 60 + parts[2]
         if len(parts) == 2:
             return parts[0] * 60 + parts[1]
-
     match = re.match(r"(\d+)([a-zA-Z]+)", arg)
     if match:
         val = int(match.group(1))
@@ -155,7 +154,6 @@ def parse_time(arg):
     return 0
 
 
-# Main functions to get time parts from seconds.
 def get_time_parts(seconds):
     if seconds is None:
         seconds = 0
@@ -168,8 +166,6 @@ def get_time_parts(seconds):
     return sign, h, m, s, cs
 
 
-# Converts seconds to string.
-# if adaptive=True, hides hours if 0, and hides minutes if 0
 def format_time(seconds, adaptive=False):
     sign, h, m, s, cs = get_time_parts(seconds)
     if adaptive:
@@ -182,7 +178,6 @@ def format_time(seconds, adaptive=False):
     return f"{sign}{h:02d}:{m:02d}:{s:02d}:{cs:02d}"
 
 
-# Short format for Split View (H:MM:SS or M:SS or S)
 def short_time(seconds):
     sign, h, m, s, _ = get_time_parts(seconds)
     if h > 0:
@@ -193,7 +188,6 @@ def short_time(seconds):
         return f"{sign}{s}"
 
 
-# Format time for notifications and tooltip "1h 30m 10s" format
 def readable_time(seconds):
     _, h, m, s, _ = get_time_parts(seconds)
     parts = []
@@ -207,22 +201,23 @@ def readable_time(seconds):
 
 
 ##########################################
-# Main script logic ######################
-#########################################
+# In‑memory command handlers             #
+##########################################
 
 
-# Stopwatch
-def handle_stopwatch(action):
-    state = load_state()
+def handle_stopwatch(state, action):
     sw = state["stopwatch"]
     now = time.time()
+    changed = False
     notif_body = ""
     level = "normal"
+
     if action == "toggle-pause":
         action = "pause" if sw["status"] == "running" else "resume"
     if action == "start" and sw["accumulated"] > 0:
         action = "resume"
-    if action in ["start", "resume"]:
+
+    if action in ("start", "resume"):
         if sw["status"] != "running":
             sw["status"] = "running"
             sw["start_ts"] = now
@@ -233,42 +228,47 @@ def handle_stopwatch(action):
                 notif_body = "Resumed"
             if state.get("view") != "split":
                 state["view"] = "stopwatch"
+            changed = True
     elif action == "pause" and sw["status"] == "running":
         sw["status"] = "paused"
         elapsed = now - sw["start_ts"]
         sw["accumulated"] += elapsed
         notif_body = f"Paused at {readable_time(sw['accumulated'])}"
+        changed = True
     elif action == "reset":
         sw["status"] = "stopped"
         sw["accumulated"] = 0
         notif_body = "Reset"
         level = "critical"
+        changed = True
 
-    state["stopwatch"] = sw
-    save_state(state)
     if notif_body:
         play_sound("single")
         send_notification(notify_id_sw, "Stopwatch", notif_body, level=level)
 
+    return changed
 
-# Countdown
-def handle_countdown(args_list):
-    state = load_state()
+
+def handle_countdown(state, args_list):
     cd = state["countdown"]
     now = time.time()
+    changed = False
     notif_body = ""
     level = "normal"
     arg = args_list[0] if args_list else "resume"
+
     if arg == "add" and len(args_list) > 1:
         sec = parse_time(args_list[1])
         cd["remaining"] = max(0, cd["remaining"] + sec)
         cd["total_duration"] += sec
         notif_body = f"Added {readable_time(sec)}"
+        changed = True
     elif arg == "toggle-pause":
         if cd["status"] == "running":
             cd["status"] = "paused"
             cd["remaining"] -= now - cd["start_ts"]
             notif_body = f"Paused ({readable_time(cd['remaining'])} left)"
+            changed = True
         else:
             if cd["remaining"] <= 0:
                 cd["remaining"] = 1800
@@ -276,37 +276,43 @@ def handle_countdown(args_list):
             cd["status"] = "running"
             cd["start_ts"] = now
             notif_body = "Resumed"
+            changed = True
     elif arg == "reset":
         cd["status"] = "stopped"
         cd["remaining"] = 0
         cd["total_duration"] = 0
         notif_body = "Reset"
         level = "critical"
+        changed = True
     elif arg == "pause" and cd["status"] == "running":
         cd["status"] = "paused"
         cd["remaining"] -= now - cd["start_ts"]
         notif_body = f"Paused ({readable_time(cd['remaining'])} left)"
+        changed = True
     elif arg == "start":
         if cd["remaining"] > 0:
             if cd["status"] != "running":
                 cd["status"] = "running"
                 cd["start_ts"] = now
                 notif_body = f"Resumed ({readable_time(cd['remaining'])})"
+                changed = True
         else:
-            # Smart Start: Use last total_duration or default 30m
             tgt = cd["total_duration"] if cd["total_duration"] > 0 else 1800
             cd["remaining"] = tgt
             cd["total_duration"] = tgt
             cd["status"] = "running"
             cd["start_ts"] = now
             notif_body = f"Started ({readable_time(tgt)})"
+            changed = True
         if state.get("view") != "split":
             state["view"] = "countdown"
+            changed = True
     elif arg == "resume":
         if cd["remaining"] > 0 and cd["status"] != "running":
             cd["status"] = "running"
             cd["start_ts"] = now
             notif_body = f"Resumed ({readable_time(cd['remaining'])})"
+            changed = True
             if state.get("view") != "split":
                 state["view"] = "countdown"
     else:
@@ -317,66 +323,76 @@ def handle_countdown(args_list):
             cd["remaining"] = sec
             cd["total_duration"] = sec
             notif_body = f"Started ({readable_time(sec)})"
+            changed = True
             if state.get("view") != "split":
                 state["view"] = "countdown"
 
-    state["countdown"] = cd
-    save_state(state)
     if notif_body:
         play_sound("single")
         send_notification(notify_id_cd, "Countdown", notif_body, level=level)
 
+    return changed
 
-# Pomodoro
-def handle_pomodoro(args):
-    state = load_state()
+
+def handle_pomodoro(state, args):
     pom = state["pomodoro"]
     now = time.time()
+    changed = False
     notif_body = ""
     level = "normal"
+
     if not args:
         args = ["toggle-pause"]
 
-    if args[0] == "toggle-pause":
+    arg0 = args[0]
+    if arg0 == "toggle-pause":
         if pom["status"] == "running":
             pom["status"] = "paused"
             pom["remaining"] -= now - pom["start_ts"]
             notif_body = f"Paused ({readable_time(pom['remaining'])} left)"
+            changed = True
         else:
             if pom["remaining"] <= 0:
                 pom["remaining"] = pom["work_duration"]
             pom["status"] = "running"
             pom["start_ts"] = now
             notif_body = f"Resumed {pom['current_phase'].upper()}"
-    elif args[0] == "pause" and pom["status"] == "running":
+            changed = True
+    elif arg0 == "pause" and pom["status"] == "running":
         pom["status"] = "paused"
         pom["remaining"] -= now - pom["start_ts"]
         notif_body = f"Paused ({readable_time(pom['remaining'])} left)"
-    elif args[0] == "resume" and pom["status"] != "running":
+        changed = True
+    elif arg0 == "resume" and pom["status"] != "running":
         if pom["remaining"] <= 0:
             pom["remaining"] = pom["work_duration"]
         pom["status"] = "running"
         pom["start_ts"] = now
         notif_body = f"Resumed {pom['current_phase'].upper()}"
-    elif args[0] == "start":
+        changed = True
+    elif arg0 == "start":
         if pom["remaining"] > 0:
             if pom["status"] != "running":
                 pom["status"] = "running"
                 pom["start_ts"] = now
                 notif_body = f"Resumed {pom['current_phase'].upper()}"
+                changed = True
         else:
             pom["current_phase"] = "work"
             pom["remaining"] = pom["work_duration"]
             pom["status"] = "running"
             pom["start_ts"] = now
             notif_body = f"Started\nWork: {readable_time(pom['work_duration'])}, Break: {readable_time(pom['break_duration'])}"
+            changed = True
         if state.get("view") != "split":
             state["view"] = "pomodoro"
-    elif args[0] == "reset":
+            changed = True
+    elif arg0 == "reset":
         pom["status"] = "stopped"
         pom["remaining"] = 0
         notif_body = "Reset"
         level = "critical"
+        changed = True
     elif len(args) >= 2:
         w = parse_time(args[0])
         b = parse_time(args[1])
@@ -391,141 +407,278 @@ def handle_pomodoro(args):
             }
         )
         notif_body = f"Started\nWork: {readable_time(w)}, Break: {readable_time(b)}"
+        changed = True
         if state.get("view") != "split":
             state["view"] = "pomodoro"
 
-    state["pomodoro"] = pom
-    save_state(state)
     if notif_body:
         play_sound("single")
         send_notification(notify_id_pom, "Pomodoro", notif_body, level=level)
 
+    return changed
 
-def handle_view_toggle():
-    state = load_state()
+
+def handle_view_toggle(state):
     modes = ["stopwatch", "countdown", "pomodoro", "split"]
     current = state.get("view", "stopwatch")
     idx = modes.index(current) if current in modes else 0
     state["view"] = modes[(idx + 1) % len(modes)]
-    save_state(state)
+    return True
 
 
-def handle_split_toggle_pause():
-    """
-    Handles Toggle Pause based on Priority .
-
-    1. Priority 1 (Running) -> Action: PAUSE
-    2. Priority 2 (Paused)  -> Action: RESUME
-    3. Priority 3 (Stopped) -> Action: START
-
-    """
-    state = load_state()
+def handle_split_toggle_pause(state):
     timers = {
         "stopwatch": state["stopwatch"],
         "countdown": state["countdown"],
         "pomodoro": state["pomodoro"],
     }
 
-    # Function to get rank: 1=Highest, 3=Lowest
-    def get_rank(status):
+    def rank(status):
         if status == "running":
             return 1
-        elif status == "paused":
+        if status == "paused":
             return 2
-        else:  # stopped, done....
-            return 3
+        return 3
 
-    # Calculate ranks for all timers
-    timer_ranks = {}
-    for name, timer in timers.items():
-        timer_ranks[name] = get_rank(timer["status"])
+    timer_ranks = {name: rank(t["status"]) for name, t in timers.items()}
+    highest = min(timer_ranks.values())
 
-    highest_priority_found = min(timer_ranks.values())
-
-    for name, rank in timer_ranks.items():
-        if rank != highest_priority_found:
+    changed = False
+    for name, r in timer_ranks.items():
+        if r != highest:
             continue
-
-        # Decide the action based on the rank
-        action = ""
-        if rank == 1:
-            action = "pause"  # It's running, so pause it
-        elif rank == 2:
-            action = "resume"  # It's paused, so resume it
-        elif rank == 3:
-            action = "start"  # It's stopped, so start it
-
-        # Apply the action
+        action = "pause" if r == 1 else ("resume" if r == 2 else "start")
         if name == "stopwatch":
-            handle_stopwatch(action)
+            changed = handle_stopwatch(state, action) or changed
         elif name == "countdown":
-            handle_countdown([action])
+            changed = handle_countdown(state, [action]) or changed
         elif name == "pomodoro":
-            handle_pomodoro([action])
+            changed = handle_pomodoro(state, [action]) or changed
+    return changed
 
 
-def handle_smart_action(action):
-    state = load_state()
+def handle_smart_action(state, action):
     view = state.get("view", "stopwatch")
     if view == "stopwatch":
-        handle_stopwatch(action)
+        return handle_stopwatch(state, action)
     elif view == "countdown":
-        handle_countdown([action])
+        return handle_countdown(state, [action])
     elif view == "pomodoro":
-        handle_pomodoro([action])
+        return handle_pomodoro(state, [action])
     elif view == "split":
         if action == "toggle-pause":
-            handle_split_toggle_pause()
+            return handle_split_toggle_pause(state)
         else:
-            handle_stopwatch(action)
-            handle_countdown([action])
-            handle_pomodoro([action])
+            c1 = handle_stopwatch(state, action)
+            c2 = handle_countdown(state, [action])
+            c3 = handle_pomodoro(state, [action])
+            return c1 or c2 or c3
+    return False
 
 
-# Monitor loop to output JSON for Waybar
+##########################################
+# Output builder                         #
+##########################################
+
+
+def build_output(state, now):
+    sw = state["stopwatch"]
+    sw_sec = sw["accumulated"] + (
+        now - sw["start_ts"] if sw["status"] == "running" else 0
+    )
+
+    cd = state["countdown"]
+    cd_sec = cd["remaining"]
+    if cd["status"] == "running":
+        cd_sec = cd["remaining"] - (now - cd["start_ts"])
+        if cd_sec < 0:
+            cd_sec = 0
+
+    pom = state["pomodoro"]
+    pom_sec = pom["remaining"]
+    if pom["status"] == "running":
+        pom_sec = pom["remaining"] - (now - pom["start_ts"])
+        if pom_sec < 0:
+            pom_sec = 0
+
+    curr_pom_icon = (
+        break_icon
+        if pom["current_phase"] == "break" and pom["status"] != "stopped"
+        else pom_icon
+    )
+    view = state.get("view", "stopwatch")
+
+    sw_disp = (
+        f"{sw_icon} {format_time(sw_sec, True)}"
+        if sw["status"] != "stopped"
+        else sw_icon
+    )
+    cd_disp = (
+        f"{cd_icon} Done!"
+        if cd["status"] == "done"
+        else (
+            f"{cd_icon} {format_time(cd_sec, True)}"
+            if cd["status"] != "stopped"
+            else cd_icon
+        )
+    )
+    pom_disp = (
+        f"{curr_pom_icon} {format_time(pom_sec, True)}"
+        if pom["status"] != "stopped"
+        else pom_icon
+    )
+
+    if view == "stopwatch":
+        final_text = sw_disp
+        tooltip = f"Mode: Stopwatch\nStatus: {sw['status']}"
+    elif view == "countdown":
+        final_text = cd_disp
+        tooltip = f"Mode: Countdown\nStatus: {cd['status']}"
+        if cd["total_duration"] > 0:
+            tooltip += f"\nTarget: {readable_time(cd['total_duration'])}"
+    elif view == "pomodoro":
+        final_text = pom_disp
+        tooltip = f"Mode: Pomodoro\nStatus: {pom['status']}\nPhase: {pom['current_phase'].upper()}\nWork: {readable_time(pom['work_duration'])} | Break: {readable_time(pom['break_duration'])}"
+    else:  # split view
+        s_sw = (
+            f"{sw_icon} {short_time(sw_sec)}" if sw["status"] != "stopped" else sw_icon
+        )
+        s_cd = (
+            f"{cd_icon} {short_time(cd_sec)}"
+            if cd["status"] not in ["stopped", "done"]
+            else (f"{cd_icon} Done!" if cd["status"] == "done" else cd_icon)
+        )
+        s_pom = (
+            f"{curr_pom_icon} {short_time(pom_sec)}"
+            if pom["status"] != "stopped"
+            else pom_icon
+        )
+        final_text = f"{s_sw} | {s_cd} | {s_pom}"
+        tooltip = "Split View\nOrder: Stopwatch | Countdown | Pomodoro"
+
+    is_running = any(t["status"] == "running" for t in (sw, cd, pom))
+    is_paused = any(t["status"] == "paused" for t in (sw, cd, pom))
+    global_status = "running" if is_running else "paused" if is_paused else "stopped"
+    if cd["status"] == "done":
+        global_status += " expired"
+
+    class_list = [view] + global_status.split()
+    if pom["status"] != "stopped":
+        class_list += ["pomodoro", pom["current_phase"]]
+
+    return json.dumps(
+        {
+            "text": final_text,
+            "tooltip": tooltip,
+            "class": class_list,
+            "alt": view,
+        }
+    )
+
+
+##########################################
+# Monitor loop                           #
+##########################################
 
 
 def run_monitor():
+    state = load_state()
+    os.makedirs(config_dir, exist_ok=True)
+
+    if not os.path.exists(fifo_path):
+        os.mkfifo(fifo_path)
+    fifo_fd = os.open(fifo_path, os.O_RDWR | os.O_NONBLOCK)
+
+    # Immediately output the initial state so Waybar isn't blank.
+    now = time.time()
+    print(build_output(state, now), flush=True)
+
+    buffer = ""
+
     while True:
-        state = load_state()
+        sw = state["stopwatch"]
+        cd = state["countdown"]
+        pom = state["pomodoro"]
+        is_running = any(t["status"] == "running" for t in (sw, cd, pom))
+        timeout = 0.1 if is_running else None
+        rlist, _, _ = select.select([fifo_fd], [], [], timeout)
+
+        state_changed = False
+
+        # 1. Process all waiting FIFO commands
+        if fifo_fd in rlist:
+            while True:
+                try:
+                    data = os.read(fifo_fd, 4096)
+                except BlockingIOError:
+                    break
+                if not data:
+                    break
+                buffer += data.decode()
+            while "\n" in buffer:
+                line, buffer = buffer.split("\n", 1)
+                line = line.strip()
+                if line:
+                    if line == "toggle-view":
+                        state_changed = handle_view_toggle(state) or state_changed
+                    elif line.startswith("current "):
+                        action = line[8:].strip()
+                        state_changed = (
+                            handle_smart_action(state, action) or state_changed
+                        )
+                    elif line.startswith("stopwatch"):
+                        action = line[len("stopwatch") :].strip() or "resume"
+                        state_changed = handle_stopwatch(state, action) or state_changed
+                    elif line.startswith("countdown"):
+                        args = (
+                            line[len("countdown") :].strip().split()
+                            if line[len("countdown") :].strip()
+                            else []
+                        )
+                        state_changed = (
+                            handle_countdown(state, args if args else ["resume"])
+                            or state_changed
+                        )
+                    elif line.startswith("pomodoro"):
+                        args = (
+                            line[len("pomodoro") :].strip().split()
+                            if line[len("pomodoro") :].strip()
+                            else []
+                        )
+                        state_changed = (
+                            handle_pomodoro(state, args if args else ["toggle-pause"])
+                            or state_changed
+                        )
+
+        # 2. Update timers (now after commands to avoid race)
         now = time.time()
 
-        sw = state["stopwatch"]
-        sw_sec = sw["accumulated"] + (
-            now - sw["start_ts"] if sw["status"] == "running" else 0
-        )
-
         cd = state["countdown"]
-        cd_sec = cd["remaining"]
         if cd["status"] == "running":
-            cd_sec = cd["remaining"] - (now - cd["start_ts"])
-            if cd_sec <= 0:
-                cd_sec = 0
+            elapsed = now - cd["start_ts"]
+            if elapsed >= cd["remaining"]:
+                cd["remaining"] = 0
                 cd["status"] = "done"
-                state["countdown"] = cd
-                save_state(state)
+                state_changed = True
                 play_sound("alarm")
                 send_notification(
                     notify_id_cd, "Time's Up!", "Countdown finished.", level="critical"
                 )
 
         pom = state["pomodoro"]
-        pom_sec = pom["remaining"]
         if pom["status"] == "running":
-            pom_sec = pom["remaining"] - (now - pom["start_ts"])
-            if pom_sec <= 0:
+            elapsed = now - pom["start_ts"]
+            if elapsed >= pom["remaining"]:
                 new_phase = "break" if pom["current_phase"] == "work" else "work"
                 new_dur = (
                     pom["break_duration"]
                     if new_phase == "break"
                     else pom["work_duration"]
                 )
-                pom.update(
-                    {"current_phase": new_phase, "start_ts": now, "remaining": new_dur}
-                )
-                state["pomodoro"] = pom
-                save_state(state)
-                pom_sec = new_dur
+                pom["current_phase"] = new_phase
+                pom["start_ts"] = now
+                pom["remaining"] = new_dur
+                state_changed = True
                 play_sound("double" if new_phase == "break" else "single")
                 send_notification(
                     notify_id_pom,
@@ -533,92 +686,65 @@ def run_monitor():
                     f"Duration: {readable_time(new_dur)}",
                 )
 
-        curr_pom_icon = (
-            break_icon
-            if pom["current_phase"] == "break" and pom["status"] != "stopped"
-            else pom_icon
+        # 3. Save if anything changed
+        if state_changed:
+            save_state(state)
+
+        # 4. Print current output
+        print(build_output(state, now), flush=True)
+
+
+##########################################
+# IPC helpers (command mode)             #
+##########################################
+
+
+def send_command(msg):
+    if not os.path.exists(fifo_path):
+        return False
+    try:
+        fd = os.open(fifo_path, os.O_WRONLY | os.O_NONBLOCK)
+        os.write(fd, (msg + "\n").encode())
+        os.close(fd)
+        return True
+    except OSError:
+        return False
+
+
+def fallback_command(cmd_str):
+    state = load_state()
+    changed = False
+    if cmd_str == "toggle-view":
+        changed = handle_view_toggle(state)
+    elif cmd_str.startswith("current "):
+        action = cmd_str[8:].strip()
+        changed = handle_smart_action(state, action)
+    elif cmd_str.startswith("stopwatch"):
+        action = cmd_str[len("stopwatch") :].strip() or "resume"
+        changed = handle_stopwatch(state, action)
+    elif cmd_str.startswith("countdown"):
+        args = (
+            cmd_str[len("countdown") :].strip().split()
+            if cmd_str[len("countdown") :].strip()
+            else []
         )
-        view = state.get("view", "stopwatch")
-
-        sw_disp = (
-            f"{sw_icon} {format_time(sw_sec, True)}"
-            if sw["status"] != "stopped"
-            else sw_icon
+        changed = handle_countdown(state, args if args else ["resume"])
+    elif cmd_str.startswith("pomodoro"):
+        args = (
+            cmd_str[len("pomodoro") :].strip().split()
+            if cmd_str[len("pomodoro") :].strip()
+            else []
         )
-        cd_disp = (
-            f"{cd_icon} Done!"
-            if cd["status"] == "done"
-            else (
-                f"{cd_icon} {format_time(cd_sec, True)}"
-                if cd["status"] != "stopped"
-                else cd_icon
-            )
-        )
-        pom_disp = (
-            f"{curr_pom_icon} {format_time(pom_sec, True)}"
-            if pom["status"] != "stopped"
-            else pom_icon
-        )
-
-        if view == "stopwatch":
-            final_text = sw_disp
-            tooltip = f"Mode: Stopwatch\nStatus: {sw['status']}"
-        elif view == "countdown":
-            final_text = cd_disp
-            tooltip = f"Mode: Countdown\nStatus: {cd['status']}"
-            if cd["total_duration"] > 0:
-                tooltip += f"\nTarget: {readable_time(cd['total_duration'])}"
-        elif view == "pomodoro":
-            final_text = pom_disp
-            w_str = readable_time(pom["work_duration"])
-            b_str = readable_time(pom["break_duration"])
-            tooltip = f"Mode: Pomodoro\nStatus: {pom['status']}\nPhase: {pom['current_phase'].upper()}\nWork: {w_str} | Break: {b_str}"
-        else:  # Split
-            s_sw = (
-                f"{sw_icon} {short_time(sw_sec)}"
-                if sw["status"] != "stopped"
-                else sw_icon
-            )
-            s_cd = (
-                f"{cd_icon} {short_time(cd_sec)}"
-                if cd["status"] not in ["stopped", "done"]
-                else (f"{cd_icon} Done!" if cd["status"] == "done" else cd_icon)
-            )
-            s_pom = (
-                f"{curr_pom_icon} {short_time(pom_sec)}"
-                if pom["status"] != "stopped"
-                else pom_icon
-            )
-            final_text = f"{s_sw} | {s_cd} | {s_pom}"
-            tooltip = "Split View\nOrder: Stopwatch | Countdown | Pomodoro"
-
-        is_running = any(s["status"] == "running" for s in [sw, cd, pom])
-        is_paused = any(s["status"] == "paused" for s in [sw, cd, pom])
-        global_status = (
-            "running" if is_running else "paused" if is_paused else "stopped"
-        )
-        if cd["status"] == "done":
-            global_status += " expired"
-
-        class_list = [view] + global_status.split()
-        if pom["status"] != "stopped":
-            class_list += ["pomodoro", pom["current_phase"]]
-
-        print(
-            json.dumps(
-                {
-                    "text": final_text,
-                    "tooltip": tooltip,
-                    "class": class_list,
-                    "alt": view,
-                }
-            ),
-            flush=True,
-        )
-        time.sleep(0.1)
+        changed = handle_pomodoro(state, args if args else ["toggle-pause"])
+    if changed:
+        save_state(state)
 
 
-# Help Message
+##########################################
+# Help message                           #
+##########################################
+
+
 def print_help():
     print(
         """
@@ -630,7 +756,7 @@ USAGE:
 GLOBAL FLAGS:
   --monitor       Run the JSON output loop for Waybar.
   --toggle-view   Cycle between Stopwatch, Countdown, Pomodoro, and Split views.
-  --current <ACT> Perform an action on the currently visible mode.
+  --current <ACT> Perform an action on the currently visible timer.
 
 ACTIONS:
     start/resume           Start or resume the timer.
@@ -648,7 +774,7 @@ COMMANDS:
      Examples:
         countdown 10m           Start a 10-minute countdown.
         countdown 1:30          Start a 1 minute 30 second countdown.
-        countdown add 5m        Add 5 minutes to current countdown.
+        countdown add 5m        Add 5 minutes to current timer.
 
   3. pomodoro [action]
      Examples:
@@ -660,8 +786,13 @@ TIME FORMATS:
   Strings: "10m", "1h", "30s", "1h30m"
   Colons:  "1:30" (1m 30s), "1:00:00" (1h)
   Integers: Treated as seconds. eg. "90" = 90 seconds = 1m 30s
-    """
+"""
     )
+
+
+##########################################
+# Entry point                            #
+##########################################
 
 
 def main():
@@ -670,7 +801,6 @@ def main():
     parser.add_argument("--toggle-view", action="store_true")
     parser.add_argument("--current", metavar="ACTION")
 
-    # Check for help flags manually since add_help=False
     if "-h" in sys.argv or "--help" in sys.argv:
         print_help()
         sys.exit(0)
@@ -681,23 +811,30 @@ def main():
     subparsers.add_parser("pomodoro", add_help=False).add_argument("args", nargs="*")
 
     args, _ = parser.parse_known_args()
-    # If no valid command/arg provided, show help
     if not any([args.monitor, args.toggle_view, args.current, args.command]):
         print_help()
         sys.exit(1)
 
     if args.monitor:
         run_monitor()
-    elif args.toggle_view:
-        handle_view_toggle()
+        return
+
+    # Build message string for FIFO
+    msg = None
+    if args.toggle_view:
+        msg = "toggle-view"
     elif args.current:
-        handle_smart_action(args.current)
+        msg = f"current {args.current}"
     elif args.command == "stopwatch":
-        handle_stopwatch(args.action or "resume")
+        msg = f"stopwatch {args.action or 'resume'}"
     elif args.command == "countdown":
-        handle_countdown(args.args or ["resume"])
+        msg = "countdown " + " ".join(args.args if args.args else ["resume"])
     elif args.command == "pomodoro":
-        handle_pomodoro(args.args or ["toggle-pause"])
+        msg = "pomodoro " + " ".join(args.args if args.args else ["toggle-pause"])
+
+    if msg:
+        if not send_command(msg):
+            fallback_command(msg)
 
 
 if __name__ == "__main__":

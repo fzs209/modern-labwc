@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#################################################
+# ==============================================================================
 # IPv4+IPv6 support, Family & Adblock options.
-#################################################
-
+# ==============================================================================
+ 
 # source color extraction script
 USER_HOME=$(eval echo "~${SUDO_USER:-$USER}")
 source "$USER_HOME/.config/waybar/scripts/css_color_extraction.sh"

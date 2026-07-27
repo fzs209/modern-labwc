@@ -33,9 +33,9 @@ if [ ! -f "$db_file" ]; then echo "[]" >"$db_file"; fi
 is_daemon_running() {
     if [ -f "$pid_file" ]; then
         local pid
-        pid=$(cat "$pid_file")
+        pid=$(<"$pid_file")
         # Check if process exists AND contains "alarm_monitor.py" in command
-        if ps -p "$pid" -o args= 2>/dev/null | grep -q "alarm_monitor.py"; then
+        if [[ $(ps -p "$pid" -o cmd=) == *alarm_monitor.py* ]]; then
             return 0
         fi
     fi
@@ -131,18 +131,70 @@ play_sound() {
     local mode="$1"
     case "$mode" in
     "bee-beep")
-        aplay -q "$sound_file" &
+        paplay --property=application.name="alarm" "$sound_file" &
         sleep 0.3
-        aplay -q "$sound_file" &
+        paplay --property=application.name="alarm" "$sound_file" &
         ;;
     "alarm")
-        (for i in {1..30}; do
-            aplay -q "$sound_file" &
-            sleep 0.2
-            aplay -q "$sound_file" &
-            sleep 0.8
-        done) &
-        return $!
+        (
+            target_vol=25
+            fade_step=5
+            fade_delay=0.02
+            declare -A orig_vols
+
+            # Ducking apps volume
+            duck_apps() {
+                local ids=$(pactl list short sink-inputs | awk '{print $1}')
+                for id in $ids; do
+                    local vol=$(pactl list sink-inputs | awk "/Sink Input #$id/{f=1} f && /Volume:/{print; exit}" | grep -o '[0-9]\+%' | head -1 | tr -d '%')
+
+                    if [[ -n "$vol" ]] && [[ "$vol" -gt "$target_vol" ]]; then
+                        orig_vols[$id]=$vol
+                        local curr=$vol
+
+                        while [[ "$curr" -gt "$target_vol" ]]; do
+                            curr=$((curr - fade_step))
+                            if [[ "$curr" -lt "$target_vol" ]]; then
+                                curr=$target_vol
+                            fi
+                            pactl set-sink-input-volume "$id" "${curr}%" 2>/dev/null
+                            sleep "$fade_delay"
+                        done
+                    fi
+                done
+            }
+
+            # Restoring volume
+            restore_volumes() {
+                for id in "${!orig_vols[@]}"; do
+                    local curr=$target_vol
+                    local target=${orig_vols[$id]}
+
+                    while [[ "$curr" -lt "$target" ]]; do
+                        curr=$((curr + fade_step))
+                        if [[ "$curr" -gt "$target" ]]; then
+                            curr=$target
+                        fi
+                        pactl set-sink-input-volume "$id" "${curr}%" 2>/dev/null
+                        sleep "$fade_delay"
+                    done
+                done
+
+                kill $(jobs -p) 2>/dev/null
+            }
+
+            trap restore_volumes EXIT
+            trap 'exit 0' INT TERM
+
+            duck_apps
+
+            for i in {1..30}; do
+                paplay --property=application.name="alarm" "$sound_file" &
+                sleep 0.2
+                paplay --property=application.name="alarm" "$sound_file" &
+                sleep 0.8
+            done
+        ) &
         ;;
     esac
 }
@@ -160,6 +212,7 @@ trigger_action() {
     local action
     action=$(notify-send "Alarm!" "${label}" \
         --icon="$alarm_icon" \
+        --category="alarm" \
         --urgency=critical \
         -t 0 \
         --action="snooze=Snooze (5m)" \
@@ -461,7 +514,6 @@ case "$1" in
 *)
     echo "Usage: alarm {tui | show-rofi | list | at TIME [DAYS] [title LABEL] | start-daemon | stop-daemon}"
     echo ""
-    echo "e.g, alarm at +30min title \"Take a break\""
     echo "e.g, alarm at 14:10 daily title \"Take a break\""
     echo "e.g, alarm at 12:30 mon,wed,sat title \"Meetings\""
     echo "e.g, alarm at 1:10am once title \"Go to sleep\""

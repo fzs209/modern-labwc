@@ -2,7 +2,7 @@
 
 # Configuration
 dir="$HOME/.config/waybar/scripts/data_monitor"
-theme_input="$dir/placeholder-2.rasi"
+theme_input="$dir/placeholder.rasi"
 resolved_conf="/etc/systemd/resolved.conf"
 
 # Runs as Root via pkexec
@@ -61,7 +61,7 @@ main() {
         msg+="8. Restore Default ISP Settings"
 
         local choice
-        choice=$(echo " Back" | rofi -dmenu -theme "$theme_input" -mesg "$msg" -p "Select Option")
+        choice=$(echo " Back" | rofi -dmenu -theme "$theme_input" -mesg "$msg" -p "Select Option" -theme-str 'textbox {horizontal-align: 0.0;}')
 
         case "$choice" in
             1)

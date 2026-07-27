@@ -13,7 +13,7 @@ source "$HOME/.config/waybar/scripts/css_color_extraction.sh"
 event_color="$primary_color"
 today_color="$secondary_color"
 past_color="$secondary_color"
-
+ 
 if [ ! -f "$config_file" ]; then
     mkdir -p "$(dirname "$config_file")"
     echo "{ \"time_format\": \"%I:%M %p\", \"date_format\": \"%d/%m/%y\", \"events\": [] }" >"$config_file"
@@ -59,7 +59,7 @@ json_delete_event() {
     local idx="$1"
     local today=$(date +%Y-%m-%d)
     local tmp=$(mktemp)
-
+	
     jq --arg d "$today" --argjson i "$idx" '
       .events |= (
         sort_by(.date < $d, .date) | 
@@ -87,16 +87,16 @@ update_offset() {
     echo $((current + $1)) >"$state_file"
 }
 
-# Waybar Output
+# Waybar Output 
 output_mode() {
     time_fmt=$(get_setting time_format)
     date_fmt=$(get_setting date_format)
     offset=$(get_offset)
-
+ 
     target_date=$(date -d "$(date +%Y-%m-01) $offset months" +%Y-%m-%d)
     current_month_str=$(date -d "$target_date" +%Y-%m)
     today_day=$(date +%-d)
-
+ 
     cal_raw=$(cal $(date -d "$target_date" "+%m %Y") --color=never | sed "1d")
 
     # Highlight Events
@@ -133,7 +133,7 @@ output_mode() {
     ' "$config_file")
 
     nl=$'\n'
-    tooltip="<b>$(date -d "$target_date" "+%B %Y")</b>${nl}<tt>$cal_formatted</tt>${nl}<span color='$event_color'>══════════════════</span>${nl}"
+    tooltip="<b>$(date -d "$target_date" "+%B %Y")</b>${nl}<tt>$cal_formatted</tt>${nl}<span color='$event_color'>════════════</span>${nl}"
 
     if [ "$offset" -eq 0 ]; then
         today_events=$(jq -r --arg d "$(date +%Y-%m-%d)" '.events[] | select(.date == $d) | "• " + .desc' "$config_file")

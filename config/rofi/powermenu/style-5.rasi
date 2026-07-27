@@ -154,7 +154,7 @@ element {
     padding:                     25px 10px;
     border:                      1px solid;
     border-radius:               20px;
-    border-color:                @hover;
+    border-color:                @border;
     background-color:            @background-alt;
     text-color:                  @foreground;
     cursor:                      pointer;

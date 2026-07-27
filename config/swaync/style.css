@@ -188,11 +188,11 @@ listview row:selected,
 listview row:hover,
 listview row:focus,
 listview row:active {
-background-color: transparent;
-background-image: none;
-box-shadow: none;
-outline: none;
-padding: 4px;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    outline: none;
+    padding: 4px;
 }
 
 /* --- NOTIFICATION ROW --- */
@@ -206,15 +206,16 @@ padding: 4px;
 
 /* --- THE NOTIFICATION CARD --- */
 .notification {
-    min-height: 30px;
-    padding: 12px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-width: 450px; /* From dunst: width = 450 */
+    padding: 16px; /* From dunst: padding = 16 */
+    border-radius: 12px; /* From dunst: corner_radius = 12 */
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08); /* Replaces harsh border with modern soft drop-shadow */
+    border: none; /* NO BORDER */
     transition: all 200ms ease;
 }
 
 /* Reset inner elements */
-.notification>box,
+.notification > box,
 .notification box,
 .notification eventbox,
 .notification grid,
@@ -222,102 +223,96 @@ padding: 4px;
     background: transparent;
     box-shadow: none;
     margin: 0;
-}
-
-.notification .icon {
-    margin-right: 16px;
-    padding: 4px;
+    border: none;
 }
 
 /* --- HOVER EFFECTS --- */
 .notification:hover {
     transition: var(--transition);
     transform: scale(1.01);
+    box-shadow: 0 6px 18px -2px rgba(0, 0, 0, 0.12);
 }
 
-/* --- BASE NOTIFICATION STYLES (low) --- */
-.notification.low {
+/* --- BASE NOTIFICATION STYLES (Low & Normal) --- */
+.notification.low,
+.notification.normal {
     opacity: 1;
     background: var(--background-main);
-    border: 1px solid var(--border-color);
+    border: none; /* NO BORDER */
     color: var(--text-color-primary);
 }
 
-/* --- BASE NOTIFICATION STYLES (Normal) --- */
-.notification.normal,
+/* --- BASE NOTIFICATION STYLES (Critical) --- */
 .notification.critical {
     opacity: 1;
     background: var(--background-main); 
-    border: 1px solid var(--border-color);
+    border: none; /* NO BORDER */
     color: var(--text-color-primary); 
+    animation: pulse-critical 2s infinite;
 }
 
-/* --- CRITICAL NOTIFICATION STYLES --- 
-.notification.critical {
-    background: var(--background-danger);
-    color: var(--text-color-danger);
-    border: 1px solid var(--text-color-danger);
-    animation: pulse-critical 2s infinite;
-}
-*/
-.notification.critical {
-    border: 1px solid var(--background-danger);
-    animation: pulse-critical 2s infinite;
+/* --- IMAGE / ICON STYLING --- */
+.notification .icon,
+.notification .image,
+.notification image {
+    margin-right: 16px; /* From dunst: text_icon_padding = 16 */
+    border-radius: 8px; /* Clean, visually proportional inner rounding */
+    background-size: cover;
+    background-position: center;
 }
 
 /* --- TEXT STYLING (Summary/Title) --- */
 .notification .summary {
-    font-size: 15px;
-    font-weight: 800;
+    font-family: 'Inter', sans-serif; /* Applied from dunstrc */
+    font-size: 14px;
+    font-weight: 700;
     text-shadow: none;
-    padding: 5px; 
-    margin-right: 30px;
+    padding: 0;
+    margin-bottom: 4px; /* From dunst: line_height = 4 */
     color: var(--text-color-primary); 
 }
 
 .notification.critical .summary,
 .notification.critical .body {
-    color: var(--background-danger);
+    color: var(--background-danger); /* Text turns red to denote critical without needing borders */
 }
 
 /* --- TEXT STYLING (Body) --- */
 .notification .body {
-    font-size: 13px;
-    padding-left: 5px;
+    font-family: 'Inter', sans-serif; /* Applied from dunstrc */
+    font-size: 13px; /* From dunst: font = Inter 13px */
+    font-weight: 400;
+    padding: 0;
     text-shadow: none;
     line-height: 1.4em;
     color: var(--text-color-primary);
     opacity: 0.9;
 }
 
-/* --- IMAGE / ICON STYLING --- */
-.notification .image,
-.notification image {
-    border-radius: var(--image-radius);
-}
-
-
 /* --- TIME STYLING --- */
 .notification .time {
-    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
     color: inherit; 
     opacity: 0.6;
     margin-right: 10px;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 /* --- ACTIONS / BUTTONS --- */
 .notification .notification-action {
     background: color-mix(in srgb, var(--button-secondary-bg), 30% transparent);
-    border-radius: var(--ui-radius);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
     font-weight: 600;
     transition: all 0.2s ease;
+    border: none;
+    margin-top: 8px;
 }
 
 .notification .notification-action:hover {
     background: color-mix(in srgb, var(--button-background), 10% transparent);
-    font-weight: 600;
-    transition: var(--transition);
     transform: translateY(-1px);
 }
 
@@ -331,36 +326,29 @@ padding: 4px;
  
 .notification.critical .notification-action {
     background: color-mix(in srgb, var(--background-danger), 30% transparent ); 
-    border: 1px solid transparent;     
-    color: var(--background-main);
 }
 
 .notification.critical .notification-action:hover {
     background: color-mix(in srgb, var(--background-danger), 10% transparent ); 
-    border: 1px solid transparent;
 }
 
-.notification.critical .notification-action label {
-    color: var(--background-main); 
-}
-
+.notification.critical .notification-action label,
 .notification.critical .notification-action:hover label {
     color: var(--background-main); 
 }
 
-/* --- NOTIFICATION PROGRESS BAR (Volume/Brightness) --- */
-
-/* Container for the progress bar */
+/* --- NOTIFICATION PROGRESS BAR (Calculations applied from Dunstrc) --- */
 .notification progressbar {
     margin-top: 10px;
     margin-bottom: 5px;
+    min-width: 150px; /* From dunst: progress_bar_min_width = 150 */
 }
 
 /* The background track (empty part of the bar) */
 .notification progressbar trough {
     background: color-mix(in srgb, var(--text-color-secondary), 80% transparent);
-    border-radius: var(--ui-radius);
-    min-height: 6px; 
+    border-radius: 2px; /* From dunst: progress_bar_corner_radius = 2 */
+    min-height: 7px; /* From dunst: progress_bar_height = 7 */
     border: none;
     box-shadow: none;
 }
@@ -368,13 +356,13 @@ padding: 4px;
 /* The fill bar (Standard)  */
 .notification progressbar progress {
     background: var(--button-background);
-    border-radius: var(--ui-radius);
-    min-height: 6px;
+    border-radius: 2px; /* From dunst: progress_bar_corner_radius = 2 */
+    min-height: 7px; /* From dunst: progress_bar_height = 7 */
     border: none;
     box-shadow: none;
 }
 
-/* The fill bar (Critical) - uses --background-danger */
+/* The fill bar (Critical) */
 .notification.critical progressbar progress {
     background: var(--background-danger);
 }
@@ -383,17 +371,17 @@ padding: 4px;
     background: color-mix(in srgb, var(--background-danger), 80% transparent);
 }
 
-
 /* --- CLOSE BUTTON --- */
 .close-button {
     color: transparent;
     background: transparent;
+    border: none;
 }
 
 /* --- CRITICAL PULSE ANIMATION --- */
 @keyframes pulse-critical {
     0% {
-        box-shadow: 0 0 0 0 var(--background-danger);
+        box-shadow: 0 0 0 0 rgba(255, 180, 171, 0.4); /* Glow effect replacing border */
     }
 
     70% {

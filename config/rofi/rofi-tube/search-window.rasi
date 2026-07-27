@@ -7,6 +7,7 @@ configuration {
     hover-select: true;
     me-select-entry: "";
     me-accept-entry: "MousePrimary";
+    //matching: "fuzzy";
 }
 
 /*****----- Global Properties -----*****/
@@ -19,7 +20,8 @@ window {
     location:                    center;
     anchor:                      center;
     fullscreen:                  false;
-    width:                       600px;
+    width:                       500px;
+    height:                      650px;
     x-offset:                    0px;
     y-offset:                    0px;
 
@@ -28,7 +30,7 @@ window {
     padding:                     10px;
     border:                      1px solid;
     border-radius:               14px;
-    border-color:                @hover;
+    border-color:                @border;
     background-color:            @background;
     cursor:                      "default";
 }
@@ -53,7 +55,7 @@ inputbar {
     margin:                      0px 0px 10px 0px;
     padding:                     15px;
     border:                      0px solid;
-    border-radius:               14px;
+    border-radius:               8px;
     border-color:                @selected;
     background-color:            @selected;
     text-color:                  @background;
@@ -62,19 +64,19 @@ inputbar {
 
 prompt {
     enabled:                     true;
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
 }
 textbox-prompt-colon {
     enabled:                     true;
     expand:                      false;
     str:                         "::";
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
 }
 entry {
     enabled:                     true;
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
     cursor:                      text;
     placeholder-color:           inherit;
@@ -83,7 +85,6 @@ entry {
 /*****----- Listview -----*****/
 listview {
     columns:                     1;
-    lines:                       7;
     cycle:                       false; 
     layout:                      vertical;
     spacing:                     0px;
@@ -94,26 +95,29 @@ listview {
  
 /*****----- Elements -----*****/
 element {
-    padding:                     0px;
-    border-radius:               8px;
+    padding:                     -14px 0px;
+    border-radius:               0px;
     background-color:            transparent;
     text-color:                  @foreground;
     cursor:                      pointer;
 }
 
 element-text {
+    padding:                     10px;
     background-color:            transparent;
     text-color:                  @foreground;
+    padding:                     0px 0px 0px 10px;
     horizontal-align:            0;
     vertical-align:              0.5;
 }
 
 element.selected  {
+    border-radius:               0px;
     background-color:            @hover;
     text-color:                  @foreground;
 }
 element-icon {
-    padding:                     4px;
+    padding:                     10px;
     background-color:            transparent;
     text-color:                  inherit;
     size:                        64px;

@@ -2,7 +2,6 @@
 
 theme_main="$script_dir/countdown.rasi"
 theme_input="$script_dir/placeholder.rasi"
-theme_input2="$script_dir/placeholder2.rasi"
 theme_confirm="$script_dir/horizontal_menu.rasi"
 
 generate_categorized_list() {
@@ -11,7 +10,7 @@ generate_categorized_list() {
 
     local now_secs=$(date +%s)
     local i=1
-
+ 
     local rows_active=""
     local rows_expired=""
 
@@ -36,7 +35,7 @@ generate_categorized_list() {
             [ "$pct" -lt 0 ] && pct=0
             status_str="$rem_days days ($pct%)"
         fi
-
+ 
         local row_str=""
         if [[ "$show_id" == "true" ]]; then
             row_str="$i.|$label|$end|$status_str"
@@ -51,7 +50,7 @@ generate_categorized_list() {
         fi
         ((i++))
     done < <(jq -r '.countdowns[] | "\(.label)\t\(.start)\t\(.end)\t\(.format)"' "$data_file")
-
+ 
     local raw_data=""
     local gap_str=""
 
@@ -64,7 +63,7 @@ generate_categorized_list() {
     fi
 
     if [ -n "$rows_active" ]; then raw_data+="$rows_active"; fi
-
+ 
     if [ -n "$rows_active" ] && [ -n "$rows_expired" ]; then
         raw_data+=$'\n'"$gap_str"
     fi
@@ -107,12 +106,12 @@ select_countdown_id() {
         echo "0"
         return
     fi
-
+ 
     local list_view=$(generate_categorized_list "true")
     local msg=$'<b>Enter ID to '"$action_verb"$'</b>\n\n'
     msg+="$list_view"
 
-    local id_in=$(echo -e " Back" | rofi -dmenu -theme "$theme_input2" -mesg "$msg")
+    local id_in=$(echo -e " Back" | rofi -dmenu -theme "$theme_input" -mesg "$msg" -theme-str 'textbox {horizontal-align: 0.0; }')
 
     if [[ "$id_in" == " Back" ]]; then id_in=""; fi
 
@@ -216,7 +215,7 @@ show_rofi_menu() {
         local count=$(get_countdown_count)
         local msg=$'<b>Waybar Countdown Manager</b>\n\n'
 
-        if [ "$count" -gt 0 ]; then
+        if [ "$count" -gt 0 ]; then 
             local list_text=$(generate_categorized_list "false")
             msg+="$list_text"
         else

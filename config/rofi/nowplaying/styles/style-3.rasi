@@ -1,64 +1,58 @@
 /***** Configuration *****/
+
 configuration {
-    show-icons:                 false;
+    show-icons: false;
     hover-select: true;
     me-select-entry: "";
     me-accept-entry: "MousePrimary";
 }
 
-/* Import your colors */
 @import "~/.config/rofi/shared/colors.rasi"
 
-/***** Main Window *****/
-window {
+window { 
     location:                    northeast;
-    anchor:                      center;
-    width:                       300px;
-    height:                      400px;
-    x-offset:                    -110px;
+    width:              550px;
+    height:             281px;
+    x-offset:           -80px;
     y-offset:                    5px;
-    background-image:            url("~/.config/rofi/nowplaying/album_art.png", height);    
-    border-radius:               15px;
-    border:                      1px;
-    border-color:                @hover;    
-    cursor:                      "default"; 
-    background-color:            @background; 
+    border-radius:      15px;
+    background-color:   @background;
+    border:             1px;
+    border-color:       @border;
+    padding:            15px;
 }
 
-/***** Main Container (Overlay) *****/
 mainbox {
-    background-color:                  transparent;
-    orientation:                 vertical;
-    spacing:                     0px;
-    padding:                     20px; 
-    background-image:      linear-gradient(135deg, rgba(255,255,255,95%), rgba(240,240,240,70%), rgba(255,255,255,95%));
-    children:                    [ "textbox-title", "textbox-custom", "listview" ];
+    orientation:        horizontal;  
+    children:           [ "album-art", "right-col" ];
+    spacing:            20px;
+    background-color:   transparent;
 }
  
-textbox-title {
-    expand:                      false;
-    background-color:            transparent;
-    text-color:                  #000000;
-    horizontal-align:            0.5;
-    str:                         "  Now Playing"; 
-    font:                        "JetBrains Mono Nerd Font Bold 14";
-    padding:                     0px 0px 10px 0px;
+album-art {
+    width:              240px;
+    border-radius:      12px;
+    background-image:   url("/tmp/nowplaying/album_art.jpg", height);
+    background-color:   @background-alt;
 }
-
-/***** Middle: Song Info *****/
+ 
+right-col {
+    orientation:        vertical;
+    children:           [ "textbox-custom", "listview" ];
+    background-color:   transparent;
+    expand:             true;
+    spacing:            0px;
+}
+ 
 textbox-custom {
-    expand:                      true;       
-    background-color:            transparent;  
-    border-radius:               20px;
-    border:                      0px;
-    border-color:                @selected;
-    margin:                      0px 0px 10px 0px;
-    padding:                     20px; 
-    text-color:                  #000000;
-    vertical-align:              0.5;
-    horizontal-align:            0.5; 
-    markup:                      true;     
-    font:                        "JetBrains Mono Nerd Font 14";
+    expand:             true;
+    vertical-align:     0.5; 
+    horizontal-align:   0.0;
+    markup:             true;
+    font:               "Inter 12";
+    text-color:         @foreground;
+    background-color:   transparent;
+    padding:            10px;
 }
 
 /*****-----(Buttons) -----*****/
@@ -76,17 +70,19 @@ listview {
 
 element {
     enabled:                     true;
-    padding:                     5px;
-    border-radius:               100%; 
+    padding:                     0px;
+    border:                      5px;
+    border-radius:               12px; 
     cursor:                      pointer;
     background-color:            @background-alt;
     text-color:                  @foreground;
     orientation:                 horizontal;
 }
 
-element selected {
-    background-color:            @selected;
-    text-color:                  @background;
+element.selected  {
+    border:                      0px;
+    background-color:            @hover;
+    text-color:                  @foreground;
 }
 
 element-text {

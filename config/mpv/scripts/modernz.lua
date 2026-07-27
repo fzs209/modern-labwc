@@ -1,7 +1,8 @@
--- ModernZ (https://github.com/Samillion/ModernZ)
+-- ModernL (https://github.com/Harsh-bin/ModernL)
 --
 -- This script is a derivative of the original mpv-osc-modern by maoiscat
 -- and subsequent forks:
+--   * Samillion/ModernZ
 --   * cyl0/ModernX
 --   * dexeonify/ModernX
 --
@@ -69,6 +70,7 @@ local user_opts = {
     time_font_size = 16,                   -- font size of the time display
 
     tooltip_font_size = 14,                -- tooltips font size
+    tooltip_text_color = "#FFFFFF",         -- tooltip text color (default: white)
 
     -- Title bar settings
     window_title = false,                  -- show window title in borderless/fullscreen mode
@@ -105,6 +107,44 @@ local user_opts = {
 
     download_button = true,                -- show download button on web videos (requires yt-dlp and ffmpeg)
     download_path = "~~desktop/mpv",       -- default download directory for videos (https://mpv.io/manual/master/#paths)
+
+    -- User customizable buttons (usr_btn_1 to usr_btn_6)
+    -- Set icon to "" to disable the button. Icon should be a UTF-8 character or icon code
+    usr_btn_1_icon = "",                   -- button 1 icon (leave empty to disable)
+    usr_btn_1_tooltip = "",                -- button 1 tooltip text
+    usr_btn_1_mbtn_left_command = "",      -- left click command
+    usr_btn_1_mbtn_right_command = "",     -- right click command
+    usr_btn_1_mbtn_mid_command = "",       -- middle click command
+
+    usr_btn_2_icon = "",                   -- button 2 icon (leave empty to disable)
+    usr_btn_2_tooltip = "",                -- button 2 tooltip text
+    usr_btn_2_mbtn_left_command = "",      -- left click command
+    usr_btn_2_mbtn_right_command = "",     -- right click command
+    usr_btn_2_mbtn_mid_command = "",       -- middle click command
+
+    usr_btn_3_icon = "",                   -- button 3 icon (leave empty to disable)
+    usr_btn_3_tooltip = "",                -- button 3 tooltip text
+    usr_btn_3_mbtn_left_command = "",      -- left click command
+    usr_btn_3_mbtn_right_command = "",     -- right click command
+    usr_btn_3_mbtn_mid_command = "",       -- middle click command
+
+    usr_btn_4_icon = "",                   -- button 4 icon (leave empty to disable)
+    usr_btn_4_tooltip = "",                -- button 4 tooltip text
+    usr_btn_4_mbtn_left_command = "",      -- left click command
+    usr_btn_4_mbtn_right_command = "",     -- right click command
+    usr_btn_4_mbtn_mid_command = "",       -- middle click command
+
+    usr_btn_5_icon = "",                   -- button 5 icon (leave empty to disable)
+    usr_btn_5_tooltip = "",                -- button 5 tooltip text
+    usr_btn_5_mbtn_left_command = "",      -- left click command
+    usr_btn_5_mbtn_right_command = "",     -- right click command
+    usr_btn_5_mbtn_mid_command = "",       -- middle click command
+
+    usr_btn_6_icon = "",                   -- button 6 icon (leave empty to disable)
+    usr_btn_6_tooltip = "",                -- button 6 tooltip text
+    usr_btn_6_mbtn_left_command = "",      -- left click command
+    usr_btn_6_mbtn_right_command = "",     -- right click command
+    usr_btn_6_mbtn_mid_command = "",       -- middle click command
 
     loop_button = false,                   -- show loop button
     speed_button = false,                  -- show speed control button
@@ -155,6 +195,19 @@ local user_opts = {
     thumbnail_border = 3,                  -- width of the thumbnail border (for thumbfast)
     thumbnail_border_radius = 3,           -- rounded corner radius for thumbnail border (0 to disable)
 
+    -- Menu window styling
+    menu_bg_color = "#14181D",             -- menu window background color
+    menu_fg_color = "#E6E6E6",             -- menu foreground/text color
+    menu_sel_color = "#4EA1FF",            -- selected item bar/arrow color
+    menu_sel_bg_color = "#1F2530",         -- selected item background color
+    menu_sel_fg_color = "#FFFFFF",         -- selected item text color
+    menu_alpha = 40,                       -- menu window alpha: 0=opaque, 255=transparent
+    menu_border_radius = 12,               -- menu window corner radius
+    menu_padding = "16 20",                -- menu padding (CSS-like 1-4 values)
+    menu_sel_bg_alpha = 60,                -- selected item background alpha (0=opaque, 255=transparent)
+    menu_sel_bg_radius = 8,                -- selected item background radius
+    menu_sel_padding = "6 8",              -- selected item background padding (CSS-like)
+
     -- Button hover effects
     hover_effect = "size,glow,color",      -- active button hover effects: "glow", "size", "color"; can use multiple separated by commas
     hover_button_size = 115,               -- relative size of a hovered button if "size" effect is active
@@ -167,6 +220,9 @@ local user_opts = {
 
     -- Progress bar settings
     seek_handle_size = 0.8,                -- size ratio of the seek handle (range: 0 ~ 1)
+    wavy_seekbar = true,                   -- enable Android 13-style wavy seekbar
+    wavy_bar_mode = "both",                -- "audio", "video", or "both"
+    seekbar_end_cap = true,                -- show a cap/dot at the end of the seekbar
     seekrange = true,                      -- show seek range overlay
     seekrangealpha = 150,                  -- transparency of the seek range
     livemarkers = true,                    -- update chapter markers on the seekbar when duration changes
@@ -182,12 +238,24 @@ local user_opts = {
     persistentprogress = false,            -- always show a small progress line at the bottom of the screen
     persistentprogressheight = 17,         -- height of the persistent progress bar
     persistentbuffer = false,              -- show buffer status on web videos in the persistent progress line
+    loading_indicator = true,              -- show loading/buffering ring
+    playpause_indicator = true,            -- show play/pause animation
 
     -- Miscellaneous settings
     visibility = "auto",                   -- only used at init to set visibility_mode(...)
     visibility_modes = "never_auto_always",-- visibility modes to cycle through
     tick_delay = 0.03,                     -- minimum interval between OSC redraws (in seconds)
     tick_delay_follow_display_fps = false, -- use display FPS as the minimum redraw interval
+
+    live_reload = true,                    -- watch modernz.conf for changes and reload automatically
+    live_reload_interval = 1.0,            -- polling interval for live reload (in seconds)
+
+    -- Ambient mode
+    disable_ambient = false,               -- completely disable the ambient mode and its button
+    ambient_on_start = false,              -- ambient mode is on by default when a file starts
+    ambient_capture_interval = 2,          -- capture interval in seconds
+    ambient_fade_duration = 1,             -- how long the colour transition takes (seconds)
+    ambient_fade_step = 1/60,              -- update rate for smooth fade (~60 fps)
 
     -- Elements Position
     -- Useful when adjusting font size or type
@@ -214,24 +282,24 @@ local user_opts = {
     title_mbtn_right_command = "script-binding select/select-watch-history; script-message-to modernz osc-hide",
 
     -- playlist button mouse actions
-    playlist_mbtn_left_command = "script-binding select/menu; script-message-to modernz osc-hide",
-    playlist_mbtn_right_command = "script-binding select/select-playlist; script-message-to modernz osc-hide",
+    playlist_mbtn_left_command = "script-message-to modernz menu-toggle playlist; script-message-to modernz osc-hide",
+    playlist_mbtn_right_command = "script-message-to modernz select/menu; script-message-to modernz osc-hide",
 
     -- volume mouse actions
     vol_ctrl_mbtn_left_command = "no-osd cycle mute",
-    vol_ctrl_mbtn_right_command = "script-binding select/select-audio-device; script-message-to modernz osc-hide",
+    vol_ctrl_mbtn_right_command = "script-message-to modernz menu-toggle audio_devices; script-message-to modernz osc-hide",
     vol_ctrl_wheel_down_command = "no-osd add volume -5",
     vol_ctrl_wheel_up_command = "no-osd add volume 5",
 
     -- audio button mouse actions
-    audio_track_mbtn_left_command = "script-binding select/select-aid; script-message-to modernz osc-hide",
+    audio_track_mbtn_left_command = "script-message-to modernz menu-toggle audio; script-message-to modernz osc-hide",
     audio_track_mbtn_mid_command = "cycle audio down",
     audio_track_mbtn_right_command = "cycle audio",
     audio_track_wheel_down_command = "cycle audio",
     audio_track_wheel_up_command = "cycle audio down",
 
     -- subtitle button mouse actions
-    sub_track_mbtn_left_command = "script-binding select/select-sid; script-message-to modernz osc-hide",
+    sub_track_mbtn_left_command = "script-message-to modernz menu-toggle sub; script-message-to modernz osc-hide",
     sub_track_mbtn_mid_command = "cycle sub down",
     sub_track_mbtn_right_command = "cycle sub",
     sub_track_wheel_down_command = "cycle sub",
@@ -240,24 +308,24 @@ local user_opts = {
     -- chapter skip buttons mouse actions
     chapter_prev_mbtn_left_command = "add chapter -1",
     chapter_prev_mbtn_mid_command = "show-text ${chapter-list} 3000",
-    chapter_prev_mbtn_right_command = "script-binding select/select-chapter; script-message-to modernz osc-hide",
+    chapter_prev_mbtn_right_command = "script-message-to modernz menu-toggle chapters; script-message-to modernz osc-hide",
 
     chapter_next_mbtn_left_command = "add chapter 1",
     chapter_next_mbtn_mid_command = "show-text ${chapter-list} 3000",
-    chapter_next_mbtn_right_command = "script-binding select/select-chapter; script-message-to modernz osc-hide",
+    chapter_next_mbtn_right_command = "script-message-to modernz menu-toggle chapters; script-message-to modernz osc-hide",
 
     -- chapter title (below seekbar) mouse actions
-    chapter_title_mbtn_left_command = "script-binding select/select-chapter; script-message-to modernz osc-hide",
+    chapter_title_mbtn_left_command = "script-message-to modernz menu-toggle chapters; script-message-to modernz osc-hide",
     chapter_title_mbtn_right_command = "show-text ${chapter-list} 3000",
 
     -- playlist skip buttons mouse actions
     playlist_prev_mbtn_left_command = "playlist-prev",
     playlist_prev_mbtn_mid_command = "show-text ${playlist} 3000",
-    playlist_prev_mbtn_right_command = "script-binding select/select-playlist; script-message-to modernz osc-hide",
+    playlist_prev_mbtn_right_command = "script-message-to modernz menu-toggle playlist; script-message-to modernz osc-hide",
 
     playlist_next_mbtn_left_command = "playlist-next",
     playlist_next_mbtn_mid_command = "show-text ${playlist} 3000",
-    playlist_next_mbtn_right_command = "script-binding select/select-playlist; script-message-to modernz osc-hide",
+    playlist_next_mbtn_right_command = "script-message-to modernz menu-toggle playlist; script-message-to modernz osc-hide",
 
     -- fullscreen button mouse actions
     fullscreen_mbtn_left_command = "cycle fullscreen",
@@ -321,6 +389,8 @@ local icon_theme = {
         loop_off = "\239\133\178",
         loop_on = "\239\133\181",
         speed = "\239\160\177",
+        ambient_on = "\243\177\141\150",
+        ambient_off = "\243\176\190\138",
         download = "\239\133\144",
         downloading = "\239\140\174",
 
@@ -367,6 +437,8 @@ local icon_theme = {
         loop_off = '\243\176\145\151',
         loop_on = '\243\176\145\150',
         speed = '\243\176\163\191',
+        ambient_on = "\243\177\141\150",
+        ambient_off = "\243\176\148\130",
         download = '\243\176\129\136',
         downloading = '\243\176\166\151',
 
@@ -393,6 +465,9 @@ local language = {
         loop_enable = "Loop",
         loop_disable = "Disable Loop",
         speed_control = "Speed Control",
+        ambient_mode = "Ambient Mode",
+        ambient_on = "Ambient Mode: On",
+        ambient_off = "Ambient Mode: Off",
         screenshot = "Screenshot",
         stats_info = "Information",
         cache = "Cache",
@@ -500,6 +575,10 @@ local sub_track_count = 0
 local window_control_box_width = 150
 local is_december = os.date("*t").month == 12
 local UNICODE_MINUS = string.char(0xe2, 0x88, 0x92)  -- UTF-8 for U+2212 MINUS SIGN
+local menu_padding = {t = 16, r = 20, b = 16, l = 20}
+local menu_sel_padding = {t = 6, r = 8, b = 6, l = 8}
+local MENU_ARROW_GLYPH = string.char(0xE2, 0x96, 0xB6)
+local menu_key_bindings = {}
 
 local function osc_color_convert(color)
     return color:sub(6,7) .. color:sub(4,5) ..  color:sub(2,3)
@@ -514,16 +593,16 @@ local function set_osc_styles()
     osc_styles = {
         osc_fade_bg = "{\\blur" .. user_opts.fade_blur_strength .. "\\bord" .. user_opts.fade_alpha .. "\\1c&H0&\\3c&H" .. osc_color_convert(user_opts.osc_color) .. "&}",
         window_fade_bg = "{\\blur" .. user_opts.window_fade_blur_strength .. "\\bord" .. user_opts.window_fade_alpha .. "\\1c&H0&\\3c&H" .. osc_color_convert(user_opts.osc_color) .. "&}",
-	window_control = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.window_controls_color) .. "&\\3c&H0&\\fs20\\fn" .. iconfont .. "}",
+        window_control = "{\\blur1\\bord1.5\\shad1.5\\1c&H" .. osc_color_convert(user_opts.window_controls_color) .. "&\\3c&H000000&\\4c&H000000&\\fs20\\fn" .. iconfont .. "}",
         window_title = "{\\blur1\\bord0.5\\1c&H" .. osc_color_convert(user_opts.window_title_color) .. "&\\3c&H0&\\fs26\\q2\\fn" .. user_opts.font .. "}",
         title = "{\\blur1\\bord0.5\\1c&H" .. osc_color_convert(user_opts.title_color) .. "&\\3c&H0&\\fs".. user_opts.title_font_size .."\\q2\\fn" .. user_opts.font .. "}",
-        chapter_title = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.chapter_title_color) .. "&\\3c&H0&\\fs" .. user_opts.chapter_title_font_size .. "\\fn" .. user_opts.font .. "}",
+        chapter_title = "{\\blur1\\bord1.5\\shad1.5\\1c&H" .. osc_color_convert(user_opts.chapter_title_color) .. "&\\3c&H000000&\\4c&H000000&\\fs" .. user_opts.chapter_title_font_size .. "\\fn" .. user_opts.font .. "}",
         seekbar_bg = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.seekbarbg_color) .. "&}",
         seekbar_fg = "{\\blur1\\bord1\\1c&H" .. osc_color_convert(user_opts.seekbarfg_color) .. "&}",
         thumbnail = "{\\blur0\\bord1\\1c&H" .. osc_color_convert(user_opts.thumbnail_border_color) .. "&\\3c&H" .. osc_color_convert(user_opts.thumbnail_border_outline) .. "&}",
         time = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.time_color) .. "&\\3c&H0&\\fs" .. user_opts.time_font_size .. "\\fn" .. user_opts.font .. "}",
         cache = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.cache_info_color) .. "&\\3c&H0&\\fs" .. user_opts.cache_info_font_size .. "\\fn" .. user_opts.font .. "}",
-        tooltip = "{\\blur1\\bord0.5\\1c&HFFFFFF&\\3c&H0&\\fs" .. user_opts.tooltip_font_size .. "\\fn" .. user_opts.font .. "}",
+        tooltip = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.tooltip_text_color) .. "&\\fs" .. user_opts.tooltip_font_size .. "\\fn" .. user_opts.font .. "}",
         volumebar_bg = "{\\blur0\\bord0\\1c&H999999&}",
         volumebar_fg = "{\\blur1\\bord1\\1c&H" .. osc_color_convert(user_opts.side_buttons_color) .. "&}",
         control_1 = "{\\blur0\\bord0\\1c&H" .. osc_color_convert(user_opts.playpause_color) .. "&\\3c&HFFFFFF&\\fs" .. playpause_size .. "\\fn" .. iconfont .. "}",
@@ -573,6 +652,9 @@ local state = {
     temp_visibility_mode = nil,             -- store temporary visibility mode state
     chapter_list = {},                      -- sorted by time
     visibility_modes = {},                  -- visibility_modes to cycle through
+    menu_active = nil,                   -- overlay menu state
+    menu_selected = 1,
+    menu_scroll = 0,
     mute = false,
     looping = false,
     sliderpos = 0,
@@ -580,6 +662,7 @@ local state = {
     initialborder = mp.get_property("border"),
     playtime_hour_force_init = false,       -- used to force request_init() once
     playtime_nohour_force_init = false,     -- used to force request_init() once
+    seeking = false,                        -- whether the player is currently seeking
     playing_and_seeking = false,
     persistent_progress_toggle = user_opts.persistentprogress,
     user_subpos = mp.get_property_number("sub-pos") or 100,
@@ -591,6 +674,18 @@ local state = {
     is_URL = false,
     is_image = false,
     url_path = "",                           -- used for yt-dlp downloading
+    playpause_anim_state = nil,             -- "play" or "pause"
+    playpause_anim_start = nil,             -- start time of the animation
+    is_loading = false,                     -- flag for initial file loading
+    ambient_enabled = false,
+    ambient_processing = false,
+    ambient_first_frame_captured = false,
+    ambient_timer = nil,
+    ambient_fade_timer = nil,
+    ambient_session_enabled = nil,
+    ambient_actual_color = {0, 0, 0},
+    ambient_target_color = {0, 0, 0},
+    ambient_fade_progress = 0,
 }
 
 local logo_lines = {
@@ -804,6 +899,58 @@ local function ass_draw_rr_h_cw(ass, x0, y0, x1, y1, r1, hexagon, r2)
     else
         ass:round_rect_cw(x0, y0, x1, y1, r1, r2)
     end
+end
+
+local function clamp(val, min_val, max_val)
+    if val < min_val then
+        return min_val
+    elseif val > max_val then
+        return max_val
+    end
+    return val
+end
+
+local function ass_alpha(val)
+    val = clamp(math.floor((val or 0) + 0.5), 0, 255)
+    return string.format("%02X", val)
+end
+
+local function ass_escape(text)
+    if text == nil then
+        return ""
+    end
+    return mp.command_native({"escape-ass", tostring(text)})
+end
+
+local function parse_padding(value)
+    local parts = {}
+    if type(value) == "number" then
+        parts = {value}
+    elseif type(value) == "string" then
+        for part in string.gmatch(value, "[^,%s]+") do
+            local num = tonumber(part)
+            if not num then
+                return nil
+            end
+            parts[#parts + 1] = num
+        end
+    else
+        return nil
+    end
+    if #parts == 0 then
+        return nil
+    end
+    for i, v in ipairs(parts) do
+        parts[i] = math.max(0, v)
+    end
+    if #parts == 1 then
+        return {t = parts[1], r = parts[1], b = parts[1], l = parts[1]}
+    elseif #parts == 2 then
+        return {t = parts[1], r = parts[2], b = parts[1], l = parts[2]}
+    elseif #parts == 3 then
+        return {t = parts[1], r = parts[2], b = parts[3], l = parts[2]}
+    end
+    return {t = parts[1], r = parts[2], b = parts[3], l = parts[4]}
 end
 
 local function get_hidetimeout()
@@ -1057,6 +1204,247 @@ local function get_chapter(possec)
     end
 end
 
+
+-- Helper to check if a video track is currently playing (ignores album art)
+local function is_video_playing()
+    local vid = mp.get_property("vid")
+    if vid and vid ~= "no" then
+        local current_video = mp.get_property_native("current-tracks/video")
+        if current_video and current_video.albumart then
+            return false
+        end
+        return true
+    end
+    return false
+end
+
+-- Ambient Mode Logic
+local ambient_output_dir = "/tmp/mpv-ambient"
+local ambient_frame_path = ambient_output_dir .. "/frame.jpg"
+os.execute(string.format('mkdir -p "%s"', ambient_output_dir))
+
+local function ambient_hex_to_rgb(hex)
+    if not hex then return nil end
+    hex = hex:gsub("#", ""):gsub("%s+", "")
+    if #hex == 8 then hex = hex:sub(-6) end
+    if #hex >= 6 then
+        return {
+            tonumber(hex:sub(1,2), 16) or 0,
+            tonumber(hex:sub(3,4), 16) or 0,
+            tonumber(hex:sub(5,6), 16) or 0
+        }
+    end
+    return nil
+end
+
+local function ambient_rgb_to_hex(r, g, b)
+    return string.format("#%02X%02X%02X", math.floor(r+0.5), math.floor(g+0.5), math.floor(b+0.5))
+end
+
+local function ambient_apply_color(r, g, b)
+    state.ambient_actual_color[1] = r
+    state.ambient_actual_color[2] = g
+    state.ambient_actual_color[3] = b
+    mp.set_property("background-color", ambient_rgb_to_hex(r, g, b))
+end
+
+local function ambient_stop_fade()
+    if state.ambient_fade_timer then
+        state.ambient_fade_timer:kill()
+        state.ambient_fade_timer = nil
+    end
+end
+
+local function ambient_stop_timer()
+    if state.ambient_timer then
+        state.ambient_timer:kill()
+        state.ambient_timer = nil
+    end
+end
+
+local function ambient_start_fade()
+    ambient_stop_fade()
+    state.ambient_fade_progress = 0
+    
+    local sr, sg, sb = state.ambient_actual_color[1], state.ambient_actual_color[2], state.ambient_actual_color[3]
+    local tr, tg, tb = state.ambient_target_color[1], state.ambient_target_color[2], state.ambient_target_color[3]
+    local dr, dg, db = tr - sr, tg - sg, tb - sb
+    local step_increment = user_opts.ambient_fade_step / user_opts.ambient_fade_duration
+
+    state.ambient_fade_timer = mp.add_periodic_timer(user_opts.ambient_fade_step, function()
+        state.ambient_fade_progress = state.ambient_fade_progress + step_increment
+        if state.ambient_fade_progress >= 1.0 then
+            ambient_stop_fade()
+            ambient_apply_color(tr, tg, tb)
+            return
+        end
+        ambient_apply_color(
+            sr + (dr * state.ambient_fade_progress),
+            sg + (dg * state.ambient_fade_progress),
+            sb + (db * state.ambient_fade_progress)
+        )
+    end)
+end
+
+local function ambient_process_and_set_color()
+    local magick_args
+    
+    -- Select arguments depending on whether it's a real video or just album art
+    if is_video_playing() then
+        magick_args = {
+            "magick",
+            "-define", "jpeg:size=16x16",
+            ambient_frame_path,
+            "-resize", "1x1",
+            "-modulate", "100,150,100",
+            "-fill", "black", "-colorize", "70%",
+            "-format", "%[hex:p{0,0}]", "info:"
+        }
+    else
+        magick_args = {
+            "magick",
+            "-define", "jpeg:size=16x16",
+            ambient_frame_path,
+            "-resize", "1x1",
+            "-modulate", "100,150,100",
+            "-colorspace", "HSL",
+            "-channel", "B", "-evaluate", "Min", "40%",
+            "-channel", "B", "-evaluate", "Max", "15%",
+            "+channel",
+            "-colorspace", "sRGB",
+            "-depth", "8",
+            "-fill", "black", "-colorize", "30%",
+            "-format", "%[hex:p{0,0}]", "info:"
+        }
+    end
+
+    mp.command_native_async({
+        name = "subprocess",
+        playback_only = false,
+        args = magick_args,
+        capture_stdout = true,
+        capture_stderr = false
+    }, function(success, result)
+        if success and result and result.status == 0 and result.stdout then
+            local new_color = ambient_hex_to_rgb(result.stdout)
+            if new_color then
+                state.ambient_target_color[1] = new_color[1]
+                state.ambient_target_color[2] = new_color[2]
+                state.ambient_target_color[3] = new_color[3]
+                ambient_start_fade()
+            end
+        end
+        state.ambient_processing = false
+        state.ambient_first_frame_captured = true
+    end)
+end
+
+local function ambient_set_to_black()
+    -- Check if we are already at black and no fade needed
+    if state.ambient_actual_color[1] == 0 and state.ambient_actual_color[2] == 0 and state.ambient_actual_color[3] == 0 then
+        if state.ambient_target_color[1] == 0 and state.ambient_target_color[2] == 0 and state.ambient_target_color[3] == 0 then
+            return
+        end
+    end
+    -- If we are already fading to black, skip to avoid restarting the timer
+    if state.ambient_fade_timer then
+        if state.ambient_target_color[1] == 0 and state.ambient_target_color[2] == 0 and state.ambient_target_color[3] == 0 then
+            return
+        end
+    end
+    -- Stop any current fade (to a different colour)
+    ambient_stop_fade()
+    -- Set the target to black and start the fade
+    state.ambient_target_color = {0, 0, 0}
+    ambient_start_fade()
+end
+
+-- Mute screenshot logs
+--mp.set_property("msg-level", "cplayer=warn")
+-- Save original screenshot quality
+local user_screenshot_quality = mp.get_property_native("screenshot-jpeg-quality", 90)
+local function ambient_capture_current()
+    mp.set_property_native("screenshot-jpeg-quality", 10)   -- low quality for this capture for faster processing
+
+    mp.command_native_async(
+        {"screenshot-to-file", ambient_frame_path, "video"},
+        function(success)
+            mp.set_property_native("screenshot-jpeg-quality", user_screenshot_quality) -- restore original quality immediately
+            if success then
+                ambient_process_and_set_color()
+            else
+                state.ambient_processing = false
+                ambient_set_to_black()
+            end
+        end
+    )
+end
+
+local function ambient_request_capture()
+    if state.ambient_processing then return end
+    if not state.ambient_enabled then return end
+    if mp.get_property_bool("pause") then return end
+    if mp.get_property_bool("seeking") then return end
+    
+    if not mp.get_property_native("video-params") then 
+        ambient_set_to_black()
+        return 
+    end
+
+    -- Audio only (album art) only gets captured once instead of at intervals.
+    if not is_video_playing() and state.ambient_first_frame_captured then return end
+
+    state.ambient_processing = true
+    ambient_capture_current()
+end
+
+local function ambient_start_timer()
+    if not state.ambient_enabled then return end
+    if not is_video_playing() then return end
+
+    if not state.ambient_timer then
+        state.ambient_timer = mp.add_periodic_timer(user_opts.ambient_capture_interval, ambient_request_capture)
+    else
+        state.ambient_timer.timeout = user_opts.ambient_capture_interval
+        state.ambient_timer:resume()
+    end
+end
+
+local function ambient_toggle(force_state)
+    if user_opts.disable_ambient then return end
+    if force_state ~= nil then
+        state.ambient_enabled = force_state
+    else
+        state.ambient_enabled = not state.ambient_enabled
+        state.ambient_session_enabled = state.ambient_enabled
+    end
+
+    if state.ambient_enabled then
+        state.ambient_first_frame_captured = false
+        mp.command("show-text '" .. locale.ambient_on .. "'")
+        ambient_request_capture()
+        ambient_start_timer()
+    else
+        mp.command("show-text '" .. locale.ambient_off .. "'")
+        ambient_stop_timer()
+        ambient_set_to_black()
+    end
+    request_tick()
+end
+
+-- Helper to check if wavy seekbar is currently active based on config and media type
+local function is_wavy_seekbar_enabled()
+    if not user_opts.wavy_seekbar then return false end
+    
+    local is_video = is_video_playing()
+
+    if user_opts.wavy_bar_mode == "both" then return true end
+    if user_opts.wavy_bar_mode == "video" and is_video then return true end
+    if user_opts.wavy_bar_mode == "audio" and not is_video then return true end
+    return false
+end
+
+
 -- Draws a handle on the seekbar according to user_opts
 -- Returns handle position and radius
 local function draw_seekbar_handle(element, elem_ass, override_alpha)
@@ -1113,20 +1501,28 @@ local function draw_seekbar_ranges(element, elem_ass, xp, rh, override_alpha)
         local pstart = math.max(0, get_slider_ele_pos_for(element, range["start"]) - slider_lo.gap)
         local pend = math.min(elem_geo.w, get_slider_ele_pos_for(element, range["end"]) + slider_lo.gap)
 
+        -- Hide the straight cache line behind the gap and played portion
+        if element.name == "seekbar" then
+            local gap = 12 -- gap between foreground and background
+            pstart = math.max(pstart, xp + gap)
+        end
+
+        local cache_radius = (elem_geo.h - 2 * slider_lo.gap) / 2
         if handle and (pstart < xp + rh and pend > xp - rh) then
             if pstart < xp - rh then
-                elem_ass:rect_cw(pstart, slider_lo.gap, xp - rh, elem_geo.h - slider_lo.gap)
+                elem_ass:round_rect_cw(pstart, slider_lo.gap, xp - rh, elem_geo.h - slider_lo.gap, cache_radius)
             end
             pstart = xp + rh
         end
 
         if pend > pstart then
-            elem_ass:rect_cw(pstart, slider_lo.gap, pend, elem_geo.h - slider_lo.gap)
+            elem_ass:round_rect_cw(pstart, slider_lo.gap, pend, elem_geo.h - slider_lo.gap, cache_radius)
         end
     end
 end
 
 -- Draw seekbar progress more accurately
+-- New Android 13-style squiggly effect (optional)
 local function draw_seekbar_progress(element, elem_ass)
     local pos = element.slider.posF()
     if not pos then
@@ -1135,7 +1531,85 @@ local function draw_seekbar_progress(element, elem_ass)
     local xp = get_slider_ele_pos_for(element, pos)
     local slider_lo = element.layout.slider
     local elem_geo = element.layout.geometry
-    elem_ass:rect_cw(0, slider_lo.gap, xp, elem_geo.h - slider_lo.gap)
+
+    -- Determine if the wavy effect should be rendered
+    local draw_wavy = is_wavy_seekbar_enabled() and element.name == "seekbar"
+
+    if draw_wavy then
+        state.wavy_damp_level = state.wavy_damp_level or 2.0
+        local is_paused = mp.get_property_bool("pause")
+        local is_manual_pause = is_paused and not state.playing_and_seeking and not state.buffering and not state.seeking
+        local target_damp = is_manual_pause and 0.0 or 1.0
+        
+        if math.abs(state.wavy_damp_level - target_damp) > 0.01 then
+            state.wavy_damp_level = state.wavy_damp_level + (target_damp - state.wavy_damp_level) * 0.15
+            request_tick()
+        else
+            state.wavy_damp_level = target_damp
+        end
+
+        local amplitude = 2.0 * state.wavy_damp_level     -- Height of the wave peaks
+        local frequency = 0.12    -- Horizontal density of the waves
+        local phase = mp.get_time() * -4 -- Movement speed of the animation
+        local y_center = elem_geo.h / 2
+        local half_thickness = (elem_geo.h - 2 * slider_lo.gap) / 2
+        local step = 3            -- Horizontal resolution of the wave drawing
+        local radius = half_thickness
+
+        if xp < radius * 2 then
+            -- Too small for waves, just draw a pill shape
+            if xp > 0 then
+                elem_ass:round_rect_cw(0, slider_lo.gap, xp, elem_geo.h - slider_lo.gap, radius)
+            end
+        else
+            -- Left rounded cap
+            elem_ass:round_rect_cw(0, y_center - radius, radius * 2, y_center + radius, radius)
+            -- Right rounded cap
+            elem_ass:round_rect_cw(xp - radius * 2, y_center - radius, xp, y_center + radius, radius)
+
+            -- Wavy body
+            local wave_start = radius
+            local wave_end = xp - radius
+            
+            elem_ass:move_to(wave_start, y_center - radius)
+            for x = wave_start, wave_end, step do
+                local damp_start = math.min(1, (x - wave_start) / 25)
+                local damp_end = math.min(1, (wave_end - x) / 25)
+                local damp = math.min(damp_start, damp_end)
+                local y_offset = math.sin(phase + x * frequency) * amplitude * damp
+                elem_ass:line_to(x, y_center - radius + y_offset)
+            end
+            elem_ass:line_to(wave_end, y_center - radius)
+            elem_ass:line_to(wave_end, y_center + radius)
+
+            for x = wave_end, wave_start, -step do
+                local damp_start = math.min(1, (x - wave_start) / 25)
+                local damp_end = math.min(1, (wave_end - x) / 25)
+                local damp = math.min(damp_start, damp_end)
+                local y_offset = math.sin(phase + x * frequency) * amplitude * damp
+                elem_ass:line_to(x, y_center + radius + y_offset)
+            end
+            elem_ass:line_to(wave_start, y_center + radius)
+        end
+        
+        -- Force a re-draw for the next frame to keep the wave animating        
+        if state.wavy_damp_level > 0 then
+            request_tick()
+        end
+    else
+        -- Fallback to straight-line with rounded caps
+        local radius = (elem_geo.h - 2 * slider_lo.gap) / 2
+        if xp > 0 then
+            elem_ass:round_rect_cw(0, slider_lo.gap, xp, elem_geo.h - slider_lo.gap, radius)
+        end
+    end
+
+    if user_opts.seekbar_end_cap and element.name == "seekbar" then
+        local radius = (elem_geo.h - 2 * slider_lo.gap) / 2
+        local y_center = elem_geo.h / 2
+        local cap_x = elem_geo.w - radius
+        ass_draw_cir_cw(elem_ass, cap_x, y_center, radius)
+    end
 end
 
 local function render_elements(master_ass)
@@ -1143,10 +1617,11 @@ local function render_elements(master_ass)
     -- then we use it instead of the normal title. we calculate it before the
     -- render iterations because the title may be rendered before the slider.
     state.forced_title = nil
+    local disable_thumbfast = thumbfast.disabled or not is_video_playing()
 
     -- disable displaying chapter name in title when thumbfast is available
     -- because thumbfast will render it above the thumbnail instead
-    if thumbfast.disabled then
+    if disable_thumbfast then
         local se, ae = state.slider_element, elements[state.active_element]
         if user_opts.chapter_fmt ~= "no" and state.touchingprogressbar then
             local dur = mp.get_property_number("duration", 0)
@@ -1165,6 +1640,40 @@ local function render_elements(master_ass)
         local element = elements[n]
         local style_ass = assdraw.ass_new()
         style_ass:merge(element.style_ass)
+
+        local is_seekbarbg = (element.name == "seekbarbg")
+        if is_seekbarbg then
+            local seekbar_elem = nil
+            for _, e in ipairs(elements) do
+                if e.name == "seekbar" then
+                    seekbar_elem = e
+                    break
+                end
+            end
+
+            local pos = seekbar_elem and seekbar_elem.slider.posF()
+            local w = element.layout.geometry.w
+            local h = element.layout.geometry.h
+            local radius = h / 2
+
+            style_ass:draw_start()
+            -- Invisible anchor points to lock the bounding box so alignment doesn't shift
+            style_ass:move_to(0, 0)
+            style_ass:move_to(w, h)
+            
+            if pos then
+                local xp = get_slider_ele_pos_for(seekbar_elem, pos)
+                local gap = 12
+                local start_x = xp + gap
+                if start_x < w then
+                    style_ass:round_rect_cw(start_x, 0, w, h, radius)
+                end
+            else
+                style_ass:round_rect_cw(0, 0, w, h, radius)
+            end
+            style_ass:draw_stop()
+        end
+
         ass_append_alpha(style_ass, element.layout.alpha, 0)
 
         if element.eventresponder and (state.active_element == n) then
@@ -1189,7 +1698,8 @@ local function render_elements(master_ass)
         local elem_ass = assdraw.ass_new()
         elem_ass:merge(style_ass)
 
-        if element.type ~= "button" then
+        -- Skip the static draw if we manually drew the background above
+        if element.type ~= "button" and not is_seekbarbg then
             elem_ass:merge(element.static_ass)
         end
 
@@ -1214,7 +1724,10 @@ local function render_elements(master_ass)
                         and element.state.mbtnleft
                         and state.mouse_down_counter > 0
                         and state.playing_and_seeking
-                    if mouse_hit(element) or force_seek_tooltip then
+                        if mouse_hit(element) or force_seek_tooltip then
+                            if disable_thumbfast and thumbfast.available then
+                                mp.commandv("script-message-to", "thumbfast", "clear")
+                            end
                         local sliderpos = get_slider_value(element)
                         local tooltiplabel = element.slider.tooltipF(sliderpos)
                         local an = slider_lo.tooltip_an
@@ -1248,7 +1761,7 @@ local function render_elements(master_ass)
 
                         -- chapter title tooltip on show_title=false and no thumbfast
                         -- add hovered chapter title above time code tooltip on seekbar hover
-                        if thumbfast.disabled and not user_opts.show_title and not user_opts.show_chapter_title then
+                        if disable_thumbfast and not user_opts.show_title and not user_opts.show_chapter_title then
                             local osd_w = mp.get_property_number("osd-width")
                             local r_w, r_h = get_virt_scale_factor()
                             if osd_w then
@@ -1271,7 +1784,7 @@ local function render_elements(master_ass)
                                 end
                             end
                         -- thumbfast
-                        elseif element.thumbnailable and not thumbfast.disabled then
+                        elseif element.thumbnailable and not disable_thumbfast then
                             local osd_w = mp.get_property_number("osd-width")
                             local r_w, r_h = get_virt_scale_factor()
 
@@ -1314,11 +1827,12 @@ local function render_elements(master_ass)
                                     local dur = mp.get_property_number("duration", 0)
                                     if dur > 0 then
                                         local ch = get_chapter(state.sliderpos * dur / 100)
+
                                         if ch and ch.title and ch.title ~= "" then
                                             elem_ass:new_event()
                                             elem_ass:pos((thumbX + thumbfast.width / 2) * r_w, thumbY * r_h - user_opts.time_font_size / 2)
                                             elem_ass:an(an)
-                                            elem_ass:append(slider_lo.tooltip_style)
+                                            elem_ass:append(string.format("{\\blur1\\bord1\\1c&HFFFFFF&\\3c&H000000&\\fs%d\\fn%s}", user_opts.tooltip_font_size, user_opts.font))
                                             ass_append_alpha(elem_ass, slider_lo.alpha, 0)
                                             elem_ass:append(string.format(user_opts.chapter_fmt, ch.title))
                                         end
@@ -1903,6 +2417,7 @@ layouts["modern"] = function ()
         lo.layer = 13
         lo.alpha[1] = 128
         lo.style = user_opts.volumebar_match_seek_color and osc_styles.seekbar_bg or osc_styles.volumebar_bg
+        lo.box.radius = 2
 
         lo = add_layout("volumebar")
         lo.geometry = {x = start_x, y = refY - 35, an = 4, w = 55, h = 10}
@@ -1989,12 +2504,32 @@ layouts["modern"] = function ()
         end_x = end_x - 45
     end
 
+    if not user_opts.disable_ambient then
+        lo = add_layout("tog_ambient")
+        lo.geometry = {x = end_x, y = refY - 35, an = 5, w = 24, h = 24}
+        lo.style = osc_styles.control_3
+        lo.visible = (osc_param.playresx >= 600 - outeroffset)
+        end_x = end_x - 45
+    end
+
     if download_button then
         lo = add_layout("download")
         lo.geometry = {x = end_x, y = refY - 35, an = 5, w = 24, h = 24}
         lo.style = osc_styles.control_3
         lo.visible = (osc_param.playresx >= 400 - outeroffset)
         end_x = end_x - 45
+    end
+
+    -- User customizable buttons (usr_btn_1 to usr_btn_6)
+    for i = 1, 6 do
+        local btn_name = "usr_btn_" .. i
+        if user_opts[btn_name .. "_icon"] and user_opts[btn_name .. "_icon"] ~= "" then
+            lo = add_layout(btn_name)
+            lo.geometry = {x = end_x, y = refY - 35, an = 5, w = 24, h = 24}
+            lo.style = osc_styles.control_3
+            lo.visible = (osc_param.playresx >= 400 - outeroffset)
+            end_x = end_x - 45
+        end
     end
 
     -- cache info
@@ -2093,6 +2628,7 @@ layouts["modern-image"] = function ()
         lo.layer = 13
         lo.alpha[1] = 128
         lo.style = osc_styles.volumebar_bg
+        lo.box.radius = 2
 
         lo = add_layout("zoom_control")
         lo.geometry = {x = 145 - (playlist_button and 0 or 25) - (track_nextprev_buttons and 0 or 70), y = refY - 30, an = 4, w = 80, h = 10}
@@ -2133,6 +2669,19 @@ layouts["modern-image"] = function ()
         lo.geometry = {x = osc_geo.w - 172 + (ontop_button and 0 or 45) + (info_button and 0 or 45) + (fullscreen_button and 0 or 45), y = refY - 30, an = 5, w = 24, h = 24}
         lo.style = osc_styles.control_3
         lo.visible = (osc_param.playresx >= 400)
+    end
+
+    -- User customizable buttons for image viewer (usr_btn_1 to usr_btn_6)
+    local user_btn_offset = 172
+    for i = 1, 6 do
+        local btn_name = "usr_btn_" .. i
+        if user_opts[btn_name .. "_icon"] and user_opts[btn_name .. "_icon"] ~= "" then
+            lo = add_layout(btn_name)
+            lo.geometry = {x = osc_geo.w - user_btn_offset + (ontop_button and 0 or 45) + (info_button and 0 or 45) + (fullscreen_button and 0 or 45), y = refY - 30, an = 5, w = 24, h = 24}
+            lo.style = osc_styles.control_3
+            lo.visible = (osc_param.playresx >= 400)
+            user_btn_offset = user_btn_offset + 45
+        end
     end
 end
 
@@ -2199,6 +2748,606 @@ local function command_callback(command)
         return function ()
             mp.command(command)
         end
+    end
+end
+
+local function menu_add_binding(key, name, fn, flags)
+    mp.add_forced_key_binding(key, name, fn, flags)
+    menu_key_bindings[#menu_key_bindings + 1] = name
+end
+
+local function menu_get_items()
+    local items = {}
+    if state.menu_active == "playlist" then
+        local playlist = mp.get_property_native("playlist", {})
+        local cur_pos = mp.get_property_number("playlist-pos", 0) + 1
+        for i, v in ipairs(playlist) do
+            local title = v.title or ""
+            if title == "" then
+                local _, fname = utils.split_path(v.filename or "")
+                title = fname ~= "" and fname or (v.filename or ("Item " .. i))
+            end
+            title = title:gsub("%.[^%.]+$", "")
+            title = title:gsub("[_%.]+", " " ):gsub("%s+", " " )
+            title = title:gsub("^%s+", "" ):gsub("%s+$", "" )
+            items[#items + 1] = {label = title, current = (i == cur_pos), index = i}
+        end
+    elseif state.menu_active == "audio" then
+        local tracks = mp.get_property_native("track-list", {})
+        local aid = tonumber(mp.get_property("aid", "0"))
+        for _, track in ipairs(tracks) do
+            if track.type == "audio" then
+                local lang = track.lang or "und"
+                local title = track.title or ""
+                local label
+                if title ~= "" then
+                    label = string.format("[%s] %s", lang, title)
+                else
+                    label = string.format("[%s] Track %s", lang, tostring(track.id or "?"))
+                end
+                items[#items + 1] = {label = label, current = track.selected or (aid and track.id == aid), track_id = track.id}
+            end
+        end
+        if #items == 0 then
+            items[1] = {label = "(No audio tracks)", current = false}
+        end
+    elseif state.menu_active == "sub" then
+        local tracks = mp.get_property_native("track-list", {})
+        local sid = mp.get_property("sid")
+        local sub_off = (sid == "no" or sid == nil)
+        items[1] = {label = "Off", current = sub_off, track_id = "no"}
+        for _, track in ipairs(tracks) do
+            if track.type == "sub" then
+                local lang = track.lang or "und"
+                local title = track.title or ("Track " .. tostring(track.id or "?"))
+                local label = string.format("[%s] %s", lang, title)
+                local cur_sid = tonumber(sid)
+                local is_cur = track.selected or (cur_sid and track.id == cur_sid)
+                items[#items + 1] = {label = label, current = is_cur, track_id = track.id}
+            end
+        end
+        if #items == 1 then
+            items[2] = {label = "(No subtitle tracks)", current = false}
+        end
+    elseif state.menu_active == "chapters" then
+        local chapters = mp.get_property_native("chapter-list", {})
+        local cur_ch = mp.get_property_number("chapter", -1)
+        if #chapters == 0 then
+            items[1] = {label = "(No chapters)", current = false}
+        else
+            for i, ch in ipairs(chapters) do
+                local title = ch.title or ("Chapter " .. i)
+                local time = mp.format_time(ch.time)
+                local label = string.format("[%s] %s", time, title)
+                items[#items + 1] = {label = label, current = (i - 1 == cur_ch), index = i - 1}
+            end
+        end
+        elseif state.menu_active == "menu" then
+        local menu_list = {
+            {label = "Playlist", action = "menu", target = "playlist"},
+            {label = "Audio devices", action = "menu", target = "audio_devices"},
+            {label = "Key bindings", action = "menu", target = "key_bindings"},
+            {label = "History", action = "cmd", target = "script-binding select/select-watch-history"},
+            {label = "Watch later", action = "cmd", target = "script-binding select/select-watch-later"},
+            {label = "Playback statistics", action = "cmd", target = "script-binding stats/display-page-1-toggle"},
+            {label = "File information", action = "cmd", target = "script-binding stats/display-page-5-toggle"},
+            {label = "Edit config file", action = "cmd", target = "script-binding select/edit-config-file"},
+            {label = "Edit key bindings", action = "cmd", target = "script-binding select/edit-input-conf"},
+            {label = "Help", action = "cmd", target = "script-binding stats/display-page-4-toggle"},
+            {label = "Online documentation", action = "cmd", target = "script-binding select/open-docs"}
+        }
+        for _, v in ipairs(menu_list) do
+            items[#items + 1] = {label = v.label, current = false, action = v.action, target = v.target}
+        end
+    elseif state.menu_active == "audio_devices" then
+        local devices = mp.get_property_native("audio-device-list", {})
+        local current_dev = mp.get_property("audio-device", "auto")
+        for _, dev in ipairs(devices) do
+            items[#items + 1] = {
+                label = dev.description or dev.name,
+                current = (dev.name == current_dev),
+                device_name = dev.name
+            }
+        end
+    elseif state.menu_active == "key_bindings" then
+        local binds = mp.get_property_native("input-bindings", {})
+        for _, bind in ipairs(binds) do
+            if bind.cmd and bind.cmd ~= "" and bind.cmd ~= "ignore" then
+                items[#items + 1] = {
+                    label = string.format("%s  ->  %s", bind.key, bind.cmd),
+                    current = false
+                }
+            end
+        end
+    end
+    return items
+end
+
+local function calculate_row_width(row_text, row_fs, max_width)
+    local total_width = 0
+    local byte_limit = nil
+    local idx = 1
+    local len = #row_text
+
+    while idx <= len do
+        local c = row_text:byte(idx)
+        if not c then break end
+        
+        local char_width = 0
+        local step = 1
+        
+        -- UTF-8 Decoding and Width Assignment
+        if c < 128 then
+            local char = string.char(c)
+            
+            -- pattern matching for grouped characters
+            if char:match("[WM]") then
+                char_width = 0.85 * row_fs
+            elseif char:match("[wm]") then
+                char_width = 0.75 * row_fs
+            elseif char:match("[%u]") then 
+                -- All other uppercase letters
+                char_width = 0.65 * row_fs
+            elseif char:match("[%d]") then 
+                -- Numbers
+                char_width = 0.55 * row_fs
+            elseif char:match("[isljft%.,!:'\"|%s]") then 
+                -- Skinny lowercase, spaces, and thin punctuation
+                char_width = 0.28 * row_fs
+            elseif char:match("[%l]") then 
+                -- All other normal lowercase letters (auncxzquop etc.)
+                char_width = 0.5 * row_fs
+            else 
+                -- Remaining symbols / miscellaneous ASCII
+                char_width = 0.4 * row_fs
+            end
+            step = 1
+        elseif c < 224 then
+            char_width = 0.5 * row_fs
+            step = 2
+        elseif c < 240 then
+            -- CJK, emojis, etc.
+            char_width = 0.9 * row_fs
+            step = 3
+        else
+            char_width = 0.9 * row_fs
+            step = 4
+        end
+
+        -- Check if we exceed the allowed limit (for truncation)
+        if max_width and (total_width + char_width > max_width) then
+            byte_limit = idx - 1
+            break
+        end
+
+        total_width = total_width + char_width
+        idx = idx + step
+    end
+
+    return total_width, byte_limit
+end
+
+local function menu_layout(items)
+    local pad = menu_padding
+    local fs = math.max(16, (user_opts.time_font_size or 16) + 1)
+    
+    -- Calculate the longest string width in the current list
+    local max_estimated_w = 0
+    for _, item in ipairs(items) do
+        local label = item.label or ""
+        local w = calculate_row_width(label, fs)
+        if w > max_estimated_w then
+            max_estimated_w = w
+        end
+    end
+    
+    -- Estimate width: max_estimated_w + padding/icons
+    local dynamic_w = max_estimated_w + 120    
+    -- Clamp between 400 and 800
+    local menu_w = math.max(400, math.min(dynamic_w, 800))    
+    -- Screen safety: ensure it doesn't exceed screen width
+    menu_w = math.min(osc_param.playresx - 40, menu_w)
+
+    if menu_w < 240 then
+        menu_w = math.max(osc_param.playresx - 20, 200)
+    end
+    
+    local header_h = 34
+    local row_h = 38
+    local y_safe_top = 60
+    local y_safe_bottom = osc_param.playresy - math.max(140, user_opts.osc_height or 0)
+    
+    if y_safe_bottom < y_safe_top + 120 then
+        y_safe_bottom = osc_param.playresy - 20
+    end
+    
+    local max_rows = math.max(1, math.floor((y_safe_bottom - y_safe_top - header_h - pad.t - pad.b) / row_h))
+    local visible = math.min(#items, max_rows)
+    local menu_h = pad.t + header_h + visible * row_h + pad.b
+    
+    local x0 = (osc_param.playresx - menu_w) / 2
+    local y0 = (osc_param.playresy - menu_h) / 2
+    y0 = math.max(y_safe_top, math.min(y_safe_bottom - menu_h, y0))
+    
+    return {
+        x0 = x0, y0 = y0, w = menu_w, h = menu_h,
+        header_h = header_h, row_h = row_h,
+        max_rows = max_rows,
+        pad = pad,
+    }
+end
+
+local function menu_close()
+    if not state.menu_active then
+        return
+    end
+    for _, name in ipairs(menu_key_bindings) do
+        mp.remove_key_binding(name)
+    end
+    menu_key_bindings = {}
+    state.menu_active = nil
+    request_tick()
+end
+
+local function menu_open(kind)
+    if not kind or kind == "" then
+        return
+    end
+    if state.menu_active == kind then
+        menu_close()
+        return
+    end
+    state.menu_active = kind
+    state.menu_selected = 1
+    state.menu_scroll = 0
+    local items = menu_get_items()
+    for i, item in ipairs(items) do
+        if item.current then
+            state.menu_selected = i
+            break
+        end
+    end
+    menu_key_bindings = {}
+    menu_add_binding("up", "modernz-menu-up", function() menu_navigate(-1) end, "repeatable")
+    menu_add_binding("down", "modernz-menu-down", function() menu_navigate(1) end, "repeatable")
+    menu_add_binding("WHEEL_UP", "modernz-menu-wheel-up", function() menu_scroll_wheel(-1) end)
+    menu_add_binding("WHEEL_DOWN", "modernz-menu-wheel-down", function() menu_scroll_wheel(1) end)
+    menu_add_binding("enter", "modernz-menu-enter", menu_confirm)
+    menu_add_binding("esc", "modernz-menu-esc", menu_close)
+    mp.add_forced_key_binding("mbtn_left", "modernz-menu-click", menu_handle_click)
+    menu_key_bindings[#menu_key_bindings + 1] = "modernz-menu-click"
+    request_tick()
+end
+
+function menu_toggle(kind)
+    if state.menu_active == kind then
+        menu_close()
+    else
+        menu_open(kind)
+    end
+end
+
+function menu_navigate(dir)
+    local items = menu_get_items()
+    local count = #items
+    if count == 0 then
+        return
+    end
+    state.menu_selected = state.menu_selected + dir
+    if state.menu_selected < 1 then
+        state.menu_selected = count
+    elseif state.menu_selected > count then
+        state.menu_selected = 1
+    end
+    request_tick()
+end
+
+function menu_scroll_wheel(dir)
+    local items = menu_get_items()
+    local count = #items
+    if count == 0 then
+        return
+    end
+    local layout = menu_layout(items)
+    if count <= layout.max_rows then return end
+    
+    local scroll = state.menu_scroll or 0
+    scroll = scroll + (dir * 3)
+    if scroll < 0 then scroll = 0 end
+    if scroll > count - layout.max_rows then scroll = count - layout.max_rows end
+    
+    state.menu_scroll = scroll
+    
+    if state.menu_selected <= scroll then
+        state.menu_selected = scroll + 1
+    elseif state.menu_selected > scroll + layout.max_rows then
+        state.menu_selected = scroll + layout.max_rows
+    end
+    request_tick()
+end
+
+function menu_confirm()
+    local items = menu_get_items()
+    local item = items[state.menu_selected]
+    if not item then
+        return
+    end
+    if state.menu_active == "playlist" then
+        mp.commandv("playlist-play-index", tostring(item.index - 1))
+    elseif state.menu_active == "chapters" then
+        if item.index ~= nil then
+            mp.commandv("set", "chapter", tostring(item.index))
+        end
+    elseif state.menu_active == "audio" then
+        if item.track_id then
+            mp.commandv("set", "aid", tostring(item.track_id))
+        end
+    elseif state.menu_active == "sub" then
+        if item.track_id then
+            mp.commandv("set", "sid", tostring(item.track_id))
+        end
+    elseif state.menu_active == "audio_devices" then
+        if item.device_name then
+            mp.commandv("set", "audio-device", item.device_name)
+        end
+    elseif state.menu_active == "menu" then
+        if item.action == "menu" then
+            menu_open(item.target)
+            return
+        elseif item.action == "cmd" then
+            mp.command(item.target)
+        end
+    end
+    menu_close()
+end
+
+function menu_handle_click()
+    if not state.menu_active then
+        return
+    end
+    local mx, my = get_virt_mouse_pos()
+    if mx < 0 or my < 0 then
+        return
+    end
+    local items = menu_get_items()
+    if #items == 0 then
+        return
+    end
+    local layout = menu_layout(items)
+    local scroll = state.menu_scroll or 0
+    local visible = math.min(#items - scroll, layout.max_rows)
+    if mx < layout.x0 or mx > layout.x0 + layout.w or my < layout.y0 or my > layout.y0 + layout.h then
+        menu_close()
+        return
+    end
+    
+    -- handle scrollbar click
+    local content_top = layout.y0 + layout.pad.t + layout.header_h
+    if #items > layout.max_rows then
+        local sb_w = 8
+        local sb_x = layout.x0 + layout.w - layout.pad.r + 4
+        if mx >= sb_x - 4 and mx <= sb_x + sb_w + 4 and my >= content_top and my <= layout.y0 + layout.h - layout.pad.b then
+            local rel_y = my - content_top
+            local avail_h = layout.max_rows * layout.row_h
+            local click_ratio = rel_y / avail_h
+            local new_scroll = math.floor(click_ratio * (#items - layout.max_rows + 1))
+            new_scroll = math.max(0, math.min(new_scroll, #items - layout.max_rows))
+            state.menu_scroll = new_scroll
+            if state.menu_selected <= new_scroll then
+                state.menu_selected = new_scroll + 1
+            elseif state.menu_selected > new_scroll + layout.max_rows then
+                state.menu_selected = new_scroll + layout.max_rows
+            end
+            request_tick()
+            return
+        end
+    end
+
+    if my < content_top then
+        return
+    end
+    local idx = math.floor((my - content_top) / layout.row_h) + 1
+    if idx >= 1 and idx <= visible then
+        state.menu_selected = idx + scroll
+        menu_confirm()
+    end
+end
+
+local function render_menu_window(ass)
+    if not state.menu_active then
+        return
+    end
+    local items = menu_get_items()
+    if #items == 0 then
+        return
+    end
+    state.menu_selected = clamp(state.menu_selected, 1, #items)
+    local layout = menu_layout(items)
+    local scroll = state.menu_scroll or 0
+    if state.menu_selected - scroll > layout.max_rows then
+        scroll = state.menu_selected - layout.max_rows
+    elseif state.menu_selected - scroll < 1 then
+        scroll = state.menu_selected - 1
+    end
+    if scroll < 0 then
+        scroll = 0
+    end
+    state.menu_scroll = scroll
+
+    local visible = math.min(#items - scroll, layout.max_rows)
+    local pad = layout.pad
+
+    local mx, my = get_virt_mouse_pos()
+    local hover_idx = nil
+    if mx >= 0 and my >= 0 then
+        local content_top = layout.y0 + pad.t + layout.header_h
+        local sb_w = 8
+        local sb_x = layout.x0 + layout.w - pad.r + 4
+        local in_scrollbar = (#items > layout.max_rows) and (mx >= sb_x - 4 and mx <= sb_x + sb_w + 4)
+        
+        if mx >= layout.x0 and mx <= layout.x0 + layout.w and my >= content_top and my <= layout.y0 + layout.h and not in_scrollbar then
+            local rel = math.floor((my - content_top) / layout.row_h) + 1
+            if rel >= 1 and rel <= visible then
+                hover_idx = rel + scroll
+            end
+        end
+    end
+    if hover_idx and hover_idx ~= state.menu_selected then
+        state.menu_selected = hover_idx
+        request_tick()
+    end
+
+    local bg = osc_color_convert(user_opts.menu_bg_color)
+    local fg = osc_color_convert(user_opts.menu_fg_color)
+    local sel = osc_color_convert(user_opts.menu_sel_color)
+    local sel_bg = osc_color_convert(user_opts.menu_sel_bg_color)
+    local sel_fg = osc_color_convert(user_opts.menu_sel_fg_color)
+    local alpha = ass_alpha(user_opts.menu_alpha)
+    local sel_alpha = ass_alpha(user_opts.menu_sel_bg_alpha)
+    local arrow = osc_color_convert(user_opts.menu_sel_color)
+
+    ass:new_event()
+    ass:pos(layout.x0, layout.y0)
+    ass:an(7)
+    ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H%s&}", bg, alpha))
+    ass:draw_start()
+    if user_opts.menu_border_radius and user_opts.menu_border_radius > 0 then
+        ass:round_rect_cw(0, 0, layout.w, layout.h, user_opts.menu_border_radius)
+    else
+        ass:rect_cw(0, 0, layout.w, layout.h)
+    end
+    ass:draw_stop()
+
+    local titles = {playlist = "PLAYLIST", audio = "AUDIO TRACKS", sub = "SUBTITLES", chapters = "CHAPTERS", menu = "MENU", audio_devices = "AUDIO DEVICES", key_bindings = "KEY BINDINGS"}
+    local header_fs = math.max(16, (user_opts.time_font_size or 16) + 4)
+    local count_fs = header_fs - 4
+
+    -- Header Left (Title)
+    ass:new_event()
+    ass:pos(layout.x0 + pad.l, layout.y0 + pad.t + layout.header_h / 2)
+    ass:an(4)
+    ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H00&\\fs%d\\fn%s\\b1}", fg, header_fs, user_opts.font))
+    ass:append(titles[state.menu_active] or "")
+
+    -- Header Right (Dynamic Count)
+    local header_count = string.format("%d items", #items)
+    if state.menu_active == "playlist" then
+        local pos = mp.get_property_number("playlist-pos", 0) + 1
+        header_count = string.format("%d / %d", pos, #items)
+    elseif state.menu_active == "chapters" then
+        local ch = mp.get_property_number("chapter", 0) + 1
+        -- Only show index if chapters actually exist
+        if #items > 0 and items[1].label ~= "(No chapters)" then
+            header_count = string.format("%d / %d", ch, #items)
+        end
+    end
+
+    ass:new_event()
+    ass:pos(layout.x0 + layout.w - pad.r, layout.y0 + pad.t + layout.header_h / 2)
+    ass:an(6)
+    ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H00&\\fs%d\\fn%s}", fg, count_fs, user_opts.font))
+    ass:append(header_count)
+
+    local indicator_w = 4
+    local text_x = layout.x0 + pad.l + indicator_w + 8
+    local row_fs = math.max(14, user_opts.time_font_size or 16)
+    
+    local right_pad = pad.r
+    if #items > layout.max_rows then
+        right_pad = right_pad + 12
+    end
+    
+    for i = 1, visible do
+        local ai = i + scroll
+        local item = items[ai]
+        if not item then
+            break
+        end
+        local ry = layout.y0 + pad.t + layout.header_h + (i - 1) * layout.row_h
+        local is_sel = (ai == state.menu_selected)
+        if is_sel then
+            local sp = menu_sel_padding
+            ass:new_event()
+            ass:pos(layout.x0 + pad.l + indicator_w + 4 - sp.l, ry - sp.t)
+            ass:an(7)
+            ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H%s&}", sel_bg, sel_alpha))
+            ass:draw_start()
+            local bg_w = layout.w - pad.l - right_pad - indicator_w - 8 + sp.l + sp.r
+            local bg_h = layout.row_h + sp.t + sp.b
+            if user_opts.menu_sel_bg_radius and user_opts.menu_sel_bg_radius > 0 then
+                ass:round_rect_cw(0, 0, bg_w, bg_h, user_opts.menu_sel_bg_radius)
+            else
+                ass:rect_cw(0, 0, bg_w, bg_h)
+            end
+            ass:draw_stop()
+
+            ass:new_event()
+            ass:pos(layout.x0 + pad.l, ry + 4)
+            ass:an(7)
+            ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H00&}", sel))
+            ass:draw_start()
+            ass:rect_cw(0, 0, indicator_w, layout.row_h - 8)
+            ass:draw_stop()
+        end
+        local text_color = is_sel and sel_fg or fg
+        
+        -- truncate text if it's too long
+        local text_str = item.label or ""
+        local max_text_width = layout.w - 60
+        local ellipsis_width = calculate_row_width("...", row_fs)
+        
+        local total_w, byte_limit = calculate_row_width(text_str, row_fs, max_text_width - ellipsis_width)
+        
+        if byte_limit then
+            text_str = text_str:sub(1, byte_limit) .. "..."
+        end
+        
+        ass:new_event()
+        ass:pos(text_x, ry + layout.row_h / 2)
+        ass:an(4)
+        local clip_x1 = layout.x0
+        local clip_x2 = layout.x0 + layout.w - right_pad - 16
+        
+        -- \q2 forces the text to stay on one line.
+        ass:append(string.format("{\\q2\\clip(%d,0,%d,%d)\\bord0\\blur0\\1c&H%s&\\1a&H00&\\fs%d\\fn%s}", 
+            clip_x1, clip_x2, osc_param.playresy, text_color, row_fs, user_opts.font))
+        ass:append(ass_escape(text_str))
+
+        if item.current then
+            ass:new_event()
+            ass:pos(layout.x0 + layout.w - right_pad - menu_sel_padding.r - 4, ry + layout.row_h / 2)
+            ass:an(6)
+            ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H00&\\fs%d\\fn%s}", sel, row_fs, user_opts.font))
+            ass:append(MENU_ARROW_GLYPH)
+        end
+    end
+    
+    if #items > layout.max_rows then
+        local sb_w = 4
+        local sb_x = layout.x0 + layout.w - pad.r + 4
+        local sb_y1 = layout.y0 + pad.t + layout.header_h
+        local sb_y2 = layout.y0 + layout.h - pad.b
+        local sb_h = sb_y2 - sb_y1
+
+        -- Uncomment to get scrollbar handle
+        --ass:new_event()
+        --ass:pos(sb_x, sb_y1)
+        --ass:an(7)
+        --ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H%s&}", fg, "AA"))
+        --ass:draw_start()
+        --ass:round_rect_cw(0, 0, sb_w, sb_h, sb_w/2)
+        --ass:draw_stop()
+        
+        local handle_h = math.max(20, (layout.max_rows / #items) * sb_h)
+        local handle_y = sb_y1 + (scroll / (#items - layout.max_rows)) * (sb_h - handle_h)
+        
+        ass:new_event()
+        ass:pos(sb_x, handle_y)
+        ass:an(7)
+        ass:append(string.format("{\\bord0\\blur0\\1c&H%s&\\1a&H00&}", sel))
+        ass:draw_start()
+        ass:round_rect_cw(0, 0, sb_w, handle_h, sb_w/2)
+        ass:draw_stop()
     end
 end
 
@@ -2659,6 +3808,17 @@ local function osc_init()
     end
     visible_min_width = visible_min_width + (user_opts.speed_button and 100 or 0)
 
+    --tog_ambient
+    if not user_opts.disable_ambient then
+        ne = new_element("tog_ambient", "button")
+        ne.content = function() return state.ambient_enabled and icons.ambient_on or icons.ambient_off end
+        ne.visible = (osc_param.playresx >= visible_min_width)
+        ne.tooltip_style = osc_styles.tooltip
+        ne.tooltipF = function() return user_opts.tooltip_hints and (state.ambient_enabled and locale.ambient_on or locale.ambient_off) or "" end
+        ne.eventresponder["mbtn_left_up"] = function () ambient_toggle() end
+        visible_min_width = visible_min_width + 100
+    end
+
     --download
     ne = new_element("download", "button")
     ne.content = function () return state.downloading and icons.downloading or icons.download end
@@ -2694,6 +3854,42 @@ local function osc_init()
     end
     visible_min_width = visible_min_width + (user_opts.download_button and 100 or 0)
 
+    -- User customizable buttons (usr_btn_1 to usr_btn_6)
+    local function add_user_button(btn_num)
+        local btn_name = "usr_btn_" .. btn_num
+        local icon_opt = btn_name .. "_icon"
+        local tooltip_opt = btn_name .. "_tooltip"
+        local has_icon = user_opts[icon_opt] and user_opts[icon_opt] ~= ""
+
+        if has_icon then
+            ne = new_element(btn_name, "button")
+            ne.content = user_opts[icon_opt]
+            ne.visible = (osc_param.playresx >= visible_min_width)
+            ne.tooltip_style = osc_styles.tooltip
+            ne.tooltipF = user_opts[tooltip_opt] and user_opts[tooltip_opt] ~= "" and user_opts[tooltip_opt] or (user_opts.tooltip_hints and ("User Button " .. btn_num) or "")
+
+            local left_cmd = user_opts[btn_name .. "_mbtn_left_command"]
+            local right_cmd = user_opts[btn_name .. "_mbtn_right_command"]
+            local mid_cmd = user_opts[btn_name .. "_mbtn_mid_command"]
+
+            if left_cmd and left_cmd ~= "" then
+                ne.eventresponder["mbtn_left_up"] = command_callback(left_cmd)
+            end
+            if right_cmd and right_cmd ~= "" then
+                ne.eventresponder["mbtn_right_up"] = command_callback(right_cmd)
+            end
+            if mid_cmd and mid_cmd ~= "" then
+                ne.eventresponder["shift+mbtn_left_down"] = command_callback(mid_cmd)
+            end
+
+            visible_min_width = visible_min_width + 100
+        end
+    end
+
+    -- Add all 6 user buttons
+    for i = 1, 6 do
+        add_user_button(i)
+    end
 
     -- cache info
     ne = new_element("cache_info", "button")
@@ -2784,6 +3980,8 @@ local function osc_init()
         -- identical seeks
         state.playing_and_seeking = true
         if mp.get_property("pause") == "no" and user_opts.mouse_seek_pause then
+            state.ignore_next_pause_anim = true
+            state.script_paused = true
             mp.commandv("cycle", "pause")
         end
         local seekto = get_slider_value(element)
@@ -2799,10 +3997,27 @@ local function osc_init()
     end
     ne.eventresponder["mbtn_left_down"] = function (element)
         element.state.mbtnleft = true
+        state.playing_and_seeking = true
+        if mp.get_property("pause") == "no" and user_opts.mouse_seek_pause then
+            state.ignore_next_pause_anim = true
+            state.script_paused = true
+            mp.commandv("cycle", "pause")
+        end
         mp.commandv("seek", get_slider_value(element), "absolute-percent+exact")
     end
     ne.eventresponder["shift+mbtn_left_down"] = function (element)
         element.state.mbtnleft = true
+        state.playing_and_seeking = true
+        if mp.get_property("pause") == "no" and user_opts.mouse_seek_pause then
+            state.ignore_next_pause_anim = true
+            state.script_paused = true
+            mp.commandv("cycle", "pause")
+        end
+        mp.commandv("seek", get_slider_value(element), "absolute-percent")
+    end
+    ne.eventresponder["shift+mbtn_left_down"] = function (element)
+        element.state.mbtnleft = true
+        state.playing_and_seeking = true
         mp.commandv("seek", get_slider_value(element), "absolute-percent")
     end
     ne.eventresponder["mbtn_left_up"] = function (element)
@@ -2827,9 +4042,11 @@ local function osc_init()
     ne.eventresponder["reset"] = function (element)
         element.state.lastseek = nil
         if state.playing_and_seeking then
-            if mp.get_property("eof-reached") == "no" and user_opts.mouse_seek_pause then
+            if state.script_paused and mp.get_property("eof-reached") == "no" and user_opts.mouse_seek_pause then
+                state.ignore_next_pause_anim = true
                 mp.commandv("cycle", "pause")
             end
+            state.script_paused = false
             state.playing_and_seeking = false
         end
     end
@@ -3151,6 +4368,251 @@ local function enable_osc(enable)
     end
 end
 
+local function render_standalone_indicators(ass)
+    local cx = osc_param.playresx / 2
+    local cy = osc_param.playresy / 2
+    local draw_requested = false
+
+    local path = mp.get_property("path")
+    -- local is_network = path and path:find("://")
+    local is_network = mp.get_property_bool("demuxer-via-network", false)
+
+    local show_loading = user_opts.loading_indicator 
+                         and not state.playing_and_seeking 
+                         and (state.buffering or (is_network and (state.is_loading or state.seeking)))
+    local is_paused = mp.get_property_bool("pause")
+    
+    -- If manually paused, strictly tie the loading ring to the cache progress
+    if is_paused and not state.seeking and state.buffering_progress then
+        show_loading = (state.buffering_progress < 100)
+    end
+
+    -- Play/Pause Indicator
+    if user_opts.playpause_indicator and not state.playing_and_seeking then
+        
+        -- Reset our tracker when a new file or stream loads
+        if state.indicator_path ~= path then
+            state.indicator_path = path
+            state.allow_play_anim = false
+            state.last_paused_state = is_paused
+        end
+
+        -- Strictly detect genuine manual transitions (Paused -> Unpaused)
+        if state.last_paused_state == true and is_paused == false then
+            state.allow_play_anim = true
+        elseif state.last_paused_state == false and is_paused == true then
+            state.allow_play_anim = false
+        end
+        state.last_paused_state = is_paused
+        
+        -- Loading completely overrides and kills the play animation
+        if show_loading then
+            state.allow_play_anim = false -- Forcefully cancel pending play icon
+            
+            if state.playpause_anim_start then
+                if state.playpause_anim_state == "play" then
+                    -- Kill the external observer's play trigger so it doesn't queue up
+                    state.playpause_anim_start = nil
+                else
+                    -- Freeze/delay the pause animation so it holds properly until loading is done
+                    state.playpause_anim_start = mp.get_time()
+                end
+            end
+        end
+        
+        local t = state.playpause_anim_start and (mp.get_time() - state.playpause_anim_start) or 999
+        local duration = 0.4
+
+        -- Only run the 'play' animation if we genuinely transitioned and aren't loading
+        local is_play_anim = (t < duration and state.playpause_anim_state == "play" and state.allow_play_anim)
+
+        if not show_loading and (is_paused or is_play_anim) then
+            local progress = math.min(t / duration, 1)
+            local ease_out = 1 - math.pow(1 - progress, 3)
+            local alpha
+            local scale
+            
+            if state.playpause_anim_state == "pause" then
+                alpha = math.floor(ease_out * 255)
+                scale = 150 - (ease_out * 50)
+            else
+                alpha = math.floor((1 - ease_out) * 255)
+                scale = 100 + (ease_out * 50)
+            end
+            
+            if is_paused and t >= duration then
+                alpha = 255
+                scale = 100
+            end
+
+            if alpha > 0 and not state.menu_active then -- ensure the play and pause indicator is hidden when a menu window is active 
+                local alpha_hex = string.format("%02X", 255 - alpha)
+                local icon = is_paused and icons.play or icons.pause
+                
+                ass:new_event()
+                ass:pos(cx, cy)
+                ass:an(5)
+                ass:append(string.format("{\\blur2\\bord1\\1c&HFFFFFF&\\3c&H0&\\1a&H%s&\\3a&H%s&\\fscx%f\\fscy%f\\fs120\\fn%s}", alpha_hex, alpha_hex, scale, scale, iconfont))
+                ass:append(icon)
+            end
+            
+            if t < duration then
+                draw_requested = true
+                request_tick()
+            end
+            
+            -- Clean up the flag when the play animation concludes
+            if not is_paused and t >= duration then
+                state.allow_play_anim = false
+            end
+        end
+    end
+
+    -- Loading Ring (Circular Progress Style)
+
+    if show_loading then
+        local t = mp.get_time()
+        local cycle_duration = 1.5
+        local progress = (t % cycle_duration) / cycle_duration
+        
+        local r = 40
+        local thickness = 4
+        
+        -- Dark Plate Overlay (Radial Vignette)
+        local osc_hex = osc_color_convert(user_opts.osc_color)
+        ass:new_event()
+        ass:pos(cx, cy)
+        ass:append(string.format("{\\blur40\\bord0\\1c&H%s&\\1a&HD0&}", osc_hex))
+        ass:draw_start()
+        ass:round_rect_cw(-r - 30, -r - 30, r + 30, r + 30, r + 30)
+        ass:draw_stop()
+
+        local gap = 0.45
+        local max_arc = math.pi * 2 - gap
+        
+        local start_angle = -math.pi / 2 + (gap / 2)
+        local arc_length = max_arc * progress
+        local end_angle = start_angle + arc_length
+        
+        local bg_start = end_angle + gap
+        local bg_end = start_angle + max_arc
+        
+        local fg_hex = osc_color_convert(user_opts.seekbarfg_color)
+        local bg_hex = osc_color_convert(user_opts.seekbarbg_color)
+        
+        local step = 0.05
+        
+        -- Background Ring
+        if bg_start < bg_end then
+            ass:new_event()
+            ass:pos(cx, cy)
+            ass:append(string.format("{\\blur0\\bord0\\1c&H%s&\\p1}", bg_hex))
+            ass:draw_start()
+            
+            local is_first = true
+            for a = bg_start, bg_end + step, step do
+                local a_clamped = math.min(a, bg_end)
+                local x = math.cos(a_clamped) * (r + thickness)
+                local y = math.sin(a_clamped) * (r + thickness)
+                if is_first then ass:move_to(x, y); is_first = false else ass:line_to(x, y) end
+            end
+            for a = bg_end, bg_start - step, -step do
+                local a_clamped = math.max(a, bg_start)
+                local x = math.cos(a_clamped) * (r - thickness)
+                local y = math.sin(a_clamped) * (r - thickness)
+                ass:line_to(x, y)
+            end
+
+            local x_bg_start = math.cos(bg_start) * r
+            local y_bg_start = math.sin(bg_start) * r
+            ass:round_rect_cw(x_bg_start - thickness, y_bg_start - thickness, x_bg_start + thickness, y_bg_start + thickness, thickness)
+            
+            local x_bg_end = math.cos(bg_end) * r
+            local y_bg_end = math.sin(bg_end) * r
+            ass:round_rect_cw(x_bg_end - thickness, y_bg_end - thickness, x_bg_end + thickness, y_bg_end + thickness, thickness)
+
+            ass:draw_stop()
+        end
+
+        -- Foreground Ring (Filled portion)
+        if arc_length > 0 then
+            ass:new_event()
+            ass:pos(cx, cy)
+            ass:append(string.format("{\\blur0\\bord0\\1c&H%s&\\p1}", fg_hex))
+            ass:draw_start()
+            
+            if is_wavy_seekbar_enabled() then
+                local amplitude = 3.0
+                local freq = 12.0
+                local anim_phase = t * -4
+                
+                local is_first = true
+                for a = start_angle, end_angle + step, step do
+                    local a_clamped = math.min(a, end_angle)
+                    
+                    local wave_damp = 1.0
+                    if a_clamped - start_angle < 0.2 then
+                        wave_damp = (a_clamped - start_angle) / 0.2
+                    end
+                    if end_angle - a_clamped < 0.2 then
+                        wave_damp = math.min(wave_damp, (end_angle - a_clamped) / 0.2)
+                    end
+                    
+                    local wave = math.sin(a_clamped * freq + anim_phase) * amplitude * wave_damp
+                    local x = math.cos(a_clamped) * (r + thickness + wave)
+                    local y = math.sin(a_clamped) * (r + thickness + wave)
+                    if is_first then ass:move_to(x, y); is_first = false else ass:line_to(x, y) end
+                end
+                for a = end_angle, start_angle - step, -step do
+                    local a_clamped = math.max(a, start_angle)
+                    
+                    local wave_damp = 1.0
+                    if a_clamped - start_angle < 0.2 then
+                        wave_damp = (a_clamped - start_angle) / 0.2
+                    end
+                    if end_angle - a_clamped < 0.2 then
+                        wave_damp = math.min(wave_damp, (end_angle - a_clamped) / 0.2)
+                    end
+                    
+                    local wave = math.sin(a_clamped * freq + anim_phase) * amplitude * wave_damp
+                    local x = math.cos(a_clamped) * (r - thickness + wave)
+                    local y = math.sin(a_clamped) * (r - thickness + wave)
+                    ass:line_to(x, y)
+                end
+            else
+                local is_first = true
+                for a = start_angle, end_angle + step, step do
+                    local a_clamped = math.min(a, end_angle)
+                    local x = math.cos(a_clamped) * (r + thickness)
+                    local y = math.sin(a_clamped) * (r + thickness)
+                    if is_first then ass:move_to(x, y); is_first = false else ass:line_to(x, y) end
+                end
+                for a = end_angle, start_angle - step, -step do
+                    local a_clamped = math.max(a, start_angle)
+                    local x = math.cos(a_clamped) * (r - thickness)
+                    local y = math.sin(a_clamped) * (r - thickness)
+                    ass:line_to(x, y)
+                end
+            end
+
+            local x_fg_start = math.cos(start_angle) * r
+            local y_fg_start = math.sin(start_angle) * r
+            ass:round_rect_cw(x_fg_start - thickness, y_fg_start - thickness, x_fg_start + thickness, y_fg_start + thickness, thickness)
+            
+            local x_fg_end = math.cos(end_angle) * r
+            local y_fg_end = math.sin(end_angle) * r
+            ass:round_rect_cw(x_fg_end - thickness, y_fg_end - thickness, x_fg_end + thickness, y_fg_end + thickness, thickness)
+
+            ass:draw_stop()
+        end
+
+        draw_requested = true
+        request_tick()
+    end
+
+    return draw_requested
+end
+
 local function render()
     msg.trace("rendering")
     local current_screen_sizeX, current_screen_sizeY = mp.get_osd_size()
@@ -3315,6 +4777,10 @@ local function render()
         render_persistentprogressbar(ass)
     end
 
+    render_menu_window(ass)
+
+    render_standalone_indicators(ass)
+
     -- submit
     set_osd(osc_param.playresy * osc_param.display_aspect,
             osc_param.playresy, ass.text, 1000)
@@ -3378,8 +4844,14 @@ tick = function()
         -- render the OSC
         render()
     else
-        -- Flush OSD
-        render_wipe()
+        -- Flush OSD or draw standalone indicators if active
+        local temp_ass = assdraw.ass_new()
+        if render_standalone_indicators(temp_ass) then
+            set_osd(osc_param.playresy * osc_param.display_aspect,
+                    osc_param.playresy, temp_ass.text, 1000)
+        else
+            render_wipe()
+        end
     end
 
     state.tick_last_time = mp.get_time()
@@ -3433,6 +4905,20 @@ end
 mp.register_event("file-loaded", function()
     is_image() -- check if file is an image
     state.new_file_flag = true
+
+    if not user_opts.disable_ambient then
+        if state.ambient_session_enabled ~= nil then
+            state.ambient_enabled = state.ambient_session_enabled
+        else
+            state.ambient_enabled = user_opts.ambient_on_start
+        end
+        if not state.ambient_enabled then
+            ambient_stop_timer()
+            ambient_set_to_black()
+        end
+    end
+    state.ambient_first_frame_captured = false
+
     state.file_size_normalized = "Approximating size..."
     check_path_url()
     if user_opts.automatickeyframemode then
@@ -3447,6 +4933,14 @@ mp.register_event("file-loaded", function()
     end
 end)
 mp.register_event("start-file", request_init)
+mp.register_event("playback-restart", function()
+    if state.ambient_enabled then
+         ambient_request_capture()        
+    end
+    if state.ambient_enabled and not mp.get_property_bool("pause") then
+        ambient_start_timer()
+    end
+end)
 mp.observe_property("track-list", "native", request_init)
 mp.observe_property("playlist-count", "native", request_init)
 mp.observe_property("playlist-pos", "native", request_init)
@@ -3458,6 +4952,7 @@ mp.observe_property("chapter-list", "native", function(_, list)
     request_init()
 end)
 mp.observe_property("seeking", "native", function(_, seeking)
+    state.seeking = seeking
     if user_opts.seek_resets_hidetimeout then
         reset_timeout()
     end
@@ -3512,6 +5007,15 @@ mp.observe_property("mute", "bool", function(_, val)
     request_tick()
 end)
 mp.observe_property("paused-for-cache", "bool", function(_, val) state.buffering = val end)
+mp.observe_property("core-idle", "bool", function(name, val)
+    local is_paused = mp.get_property_bool("pause")
+    state.is_loading = val and not is_paused
+    request_tick()
+end)
+mp.observe_property("cache-buffering-state", "number", function(name, val)
+    state.buffering_progress = val
+    request_tick()
+end)
 -- ensure compatibility with auto looping scripts (eg: a script that sets videos under 2 seconds to loop by default)
 mp.observe_property("loop-file", "bool", function(_, val)
     if (val == nil) then
@@ -3646,8 +5150,30 @@ local function idlescreen_visibility(mode, no_osd)
     request_tick()
 end
 
+local pause_initialized = false
 mp.observe_property("pause", "bool", function(name, enabled)
     pause_state(name, enabled)
+
+    if state.ambient_enabled then
+        if enabled then
+            ambient_stop_timer()
+        else
+            ambient_start_timer()
+        end
+    end
+    
+    if not pause_initialized then
+        pause_initialized = true
+    elseif user_opts.playpause_indicator then
+        if state.ignore_next_pause_anim or state.playing_and_seeking or state.seeking then
+            state.ignore_next_pause_anim = false
+        else
+            state.playpause_anim_state = enabled and "pause" or "play"
+            state.playpause_anim_start = mp.get_time()
+            request_tick()
+        end
+    end
+
     if user_opts.showonpause and user_opts.visibility ~= "never" then
         state.enabled = enabled
         if enabled then
@@ -3698,6 +5224,19 @@ mp.register_script_message("thumbfast-info", function(json)
     end
 end)
 
+mp.register_script_message("menu-open", menu_open)
+mp.register_script_message("menu-toggle", menu_toggle)
+mp.register_script_message("menu-close", menu_close)
+mp.add_key_binding(nil, "select/menu", function() menu_toggle("menu") end)
+
+
+-- Live-reload modernz.conf
+-- Reloads all user options and refreshes OSC styles/layout without restarting mpv.
+-- Trigger manually via:
+--   script-message modernz-reload
+--   script-binding modernz-reload   (bind a key in input.conf)
+-- Or automatically when modernz.conf is saved (file-watcher polls every 1 s default).
+
 -- validate string type user options
 local function validate_user_opts()
     if user_opts.window_top_bar ~= "auto" and
@@ -3707,9 +5246,74 @@ local function validate_user_opts()
           user_opts.window_top_bar = "auto"
     end
 
+    if user_opts.wavy_bar_mode ~= "audio" and
+       user_opts.wavy_bar_mode ~= "video" and
+       user_opts.wavy_bar_mode ~= "both" then
+          msg.warn("wavy_bar_mode cannot be '" .. user_opts.wavy_bar_mode .. "'. Ignoring.")
+          user_opts.wavy_bar_mode = "both"
+    end
+
     if user_opts.seek_handle_size < 0 then
         msg.warn("seek_handle_size must be 0 or higher. Setting it to 0 (minimum).")
         user_opts.seek_handle_size = 0
+    end
+
+    local live_interval = tonumber(user_opts.live_reload_interval)
+    if not live_interval or live_interval <= 0 then
+        msg.warn("live_reload_interval must be > 0. Setting it to 1.")
+        user_opts.live_reload_interval = 1
+    else
+        user_opts.live_reload_interval = live_interval
+    end
+
+    local menu_alpha = tonumber(user_opts.menu_alpha)
+    if not menu_alpha or menu_alpha < 0 or menu_alpha > 255 then
+        msg.warn("menu_alpha must be between 0 and 255. Setting it to 40.")
+        user_opts.menu_alpha = 40
+    else
+        user_opts.menu_alpha = menu_alpha
+    end
+
+    local menu_radius = tonumber(user_opts.menu_border_radius)
+    if not menu_radius or menu_radius < 0 then
+        msg.warn("menu_border_radius must be 0 or higher. Setting it to 12.")
+        user_opts.menu_border_radius = 12
+    else
+        user_opts.menu_border_radius = menu_radius
+    end
+
+    local parsed_padding = parse_padding(user_opts.menu_padding)
+    if not parsed_padding then
+        msg.warn("menu_padding must be 1-4 numbers. Setting it to '16 20'.")
+        user_opts.menu_padding = "16 20"
+        menu_padding = {t = 16, r = 20, b = 16, l = 20}
+    else
+        menu_padding = parsed_padding
+    end
+
+    local sel_alpha = tonumber(user_opts.menu_sel_bg_alpha)
+    if not sel_alpha or sel_alpha < 0 or sel_alpha > 255 then
+        msg.warn("menu_sel_bg_alpha must be between 0 and 255. Setting it to 60.")
+        user_opts.menu_sel_bg_alpha = 60
+    else
+        user_opts.menu_sel_bg_alpha = sel_alpha
+    end
+
+    local sel_radius = tonumber(user_opts.menu_sel_bg_radius)
+    if not sel_radius or sel_radius < 0 then
+        msg.warn("menu_sel_bg_radius must be 0 or higher. Setting it to 8.")
+        user_opts.menu_sel_bg_radius = 8
+    else
+        user_opts.menu_sel_bg_radius = sel_radius
+    end
+
+    local parsed_sel_padding = parse_padding(user_opts.menu_sel_padding)
+    if not parsed_sel_padding then
+        msg.warn("menu_sel_padding must be 1-4 numbers. Setting it to '6 8'.")
+        user_opts.menu_sel_padding = "6 8"
+        menu_sel_padding = {t = 6, r = 8, b = 6, l = 8}
+    else
+        menu_sel_padding = parsed_sel_padding
     end
 
     if user_opts.volume_control_type ~= "linear" and
@@ -3745,6 +5349,8 @@ local function validate_user_opts()
         user_opts.chapter_title_color, user_opts.seekbar_cache_color, user_opts.hover_effect_color,
         user_opts.windowcontrols_close_hover, user_opts.windowcontrols_max_hover, user_opts.windowcontrols_min_hover,
         user_opts.cache_info_color, user_opts.thumbnail_border_outline,
+        user_opts.menu_bg_color, user_opts.menu_fg_color, user_opts.menu_sel_color, user_opts.menu_sel_bg_color,
+        user_opts.menu_sel_fg_color,
     }
 
     for _, color in pairs(colors) do
@@ -3753,6 +5359,7 @@ local function validate_user_opts()
         end
     end
 
+    state.visibility_modes = {}
     for str in string.gmatch(user_opts.visibility_modes, "([^_]+)") do
         if str ~= "auto" and str ~= "always" and str ~= "never" then
             msg.warn("Ignoring unknown visibility mode '" .. str .."' in list")
@@ -3762,30 +5369,106 @@ local function validate_user_opts()
     end
 end
 
--- read options from config and command-line
-opt.read_options(user_opts, "modernz", function(changed)
+local config_mtime = nil
+local live_reload_timer = nil
+local reload_in_progress = false
+local reload_user_opts
+
+local function get_modernz_conf_mtime()
+    local path = mp.find_config_file("script-opts/modernz.conf")
+    if not path then
+        return nil
+    end
+    local info = utils.file_info(path)
+    if not info or not info.mtime then
+        return nil
+    end
+    return info.mtime
+end
+
+local function poll_modernz_conf()
+    if not user_opts.live_reload then
+        return
+    end
+    local mtime = get_modernz_conf_mtime()
+    if not mtime then
+        config_mtime = nil
+        return
+    end
+    if not config_mtime then
+        config_mtime = mtime
+        reload_user_opts("modernz.conf created")
+        return
+    end
+    if mtime ~= config_mtime then
+        config_mtime = mtime
+        reload_user_opts("modernz.conf changed")
+    end
+end
+
+local function start_live_reload()
+    if live_reload_timer then
+        live_reload_timer:kill()
+        live_reload_timer = nil
+    end
+    if not user_opts.live_reload then
+        return
+    end
+    local interval = tonumber(user_opts.live_reload_interval) or 1
+    if interval <= 0 then
+        interval = 1
+    end
+    live_reload_timer = mp.add_periodic_timer(interval, poll_modernz_conf)
+    config_mtime = get_modernz_conf_mtime() or config_mtime
+end
+
+local function apply_user_opts(changed, force)
     validate_user_opts()
     set_osc_locale()
     set_icon_theme()
     set_osc_styles()
-    set_time_styles(changed.timetotal, changed.timems)
-    if changed.tick_delay or changed.tick_delay_follow_display_fps then
+    if force or not changed then
+        set_time_styles(true, true)
+    else
+        set_time_styles(changed.timetotal, changed.timems)
+    end
+    if force or not changed or changed.tick_delay or changed.tick_delay_follow_display_fps then
         set_tick_delay("display_fps", mp.get_property_number("display_fps"))
     end
     request_tick()
     visibility_mode(user_opts.visibility, true)
     update_duration_watch()
     request_init()
+    start_live_reload()
+end
+
+reload_user_opts = function(reason)
+    if reload_in_progress then
+        return
+    end
+    reload_in_progress = true
+    opt.read_options(user_opts, "modernz")
+    apply_user_opts(nil, true)
+    reload_in_progress = false
+    if reason then
+        msg.info("ModernZ config reloaded (" .. reason .. ")")
+        --mp.osd_message("ModernZ config reloaded", 2)
+    end
+end
+
+mp.register_script_message("modernz-reload", function()
+    reload_user_opts("script-message")
+end)
+mp.add_key_binding(nil, "modernz-reload", function()
+    reload_user_opts("script-binding")
 end)
 
-validate_user_opts()
-set_osc_locale()
-set_icon_theme()
-set_osc_styles()
-set_time_styles(true, true)
-set_tick_delay("display_fps", mp.get_property_number("display_fps"))
-visibility_mode(user_opts.visibility, true)
-update_duration_watch()
+-- read options from config and command-line
+opt.read_options(user_opts, "modernz", function(changed)
+    apply_user_opts(changed, false)
+end)
+
+apply_user_opts(nil, true)
 
 set_virt_mouse_area(0, 0, 0, 0, "input")
 set_virt_mouse_area(0, 0, 0, 0, "window-controls")

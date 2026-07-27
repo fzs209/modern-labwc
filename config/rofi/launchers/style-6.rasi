@@ -37,7 +37,7 @@ window {
     padding:                     0px;
     border:                      1px solid;
     border-radius:               20px;
-    border-color:                @hover;
+    border-color:                @border;
     background-color:            @background;
     cursor:                      "default";
 }
@@ -81,13 +81,13 @@ textbox-prompt-colon {
     expand:                      false;
     str:                         "::";
     padding:                     15px;
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
 }
 entry {
     enabled:                     true;
     padding:                     15px 0px;
-    background-color:            inherit;
+    background-color:            transparent;
     text-color:                  inherit;
     cursor:                      text;
     placeholder:                 "Search...";
@@ -99,7 +99,7 @@ listview {
     enabled:                     true;
     columns:                     2;
     lines:                       6;
-    cycle:                       true;
+    cycle:                       false;
     dynamic:                     true;
     scrollbar:                   false;
     layout:                      vertical;

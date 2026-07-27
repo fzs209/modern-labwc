@@ -1,61 +1,95 @@
-/***** Configuration *****/
+/******--- configuration --*****/
 
 configuration {
-    show-icons: false;
+    show-icons:                 false;
     hover-select: true;
     me-select-entry: "";
     me-accept-entry: "MousePrimary";
 }
 
 @import "~/.config/rofi/shared/colors.rasi"
-
-window { 
+ 
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
     location:                    northeast;
-    width:              550px;
-    x-offset:           -80px;
+    anchor:                      center;
+    fullscreen:                  false;   
+    width:                       550px;
+    height:                      325px;
+    x-offset:                    -40px;
     y-offset:                    5px;
-    height:             300px;
-    border-radius:      15px;
-    background-image:   url("~/.config/rofi/nowplaying/album_art.png", width);
-    background-color:   @background;
-    border:             1px;
-    border-color:       @hover;
-    padding:            0px;
+    enabled:                     true;
+    cursor:                      "default";
+    background-color:            @background; 
+    border:                      1px;
+    border-color:                @border;
+    border-radius:               8px;
+    padding:                     0px;
 }
 
 mainbox {
-    padding:            15px;
-    orientation:        horizontal;  
-    children:           [ "art", "right-col" ];
-    background-color:   transparent;
-    spacing:            20px;
-    background-image:      linear-gradient(135deg, rgba(255,255,255,95%), rgba(240,240,240,70%), rgba(255,255,255,95%));
+    enabled:                     true;
+    padding:                     10px;
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "top-message", "middle-wrapper", "listview" ];
 }
- 
-art {
-    width:              240px;
-    border-radius:      12px;
-    background-image:   url("~/.config/rofi/nowplaying/album_art.png", height);
-    background-color:   @background-alt;
+
+top-message {
+    enabled:                     true;
+    padding:                     0px 0px 5px 0px;
+    background-color:            @background;
+    children:                    [ "textbox-msg" ];
+    expand:                      false;
 }
- 
-right-col {
-    orientation:        vertical;
-    children:           [ "textbox-custom", "listview" ];
-    background-color:   transparent;
-    expand:             true;
-    spacing:            0px;
+
+textbox-msg {
+    expand: true;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    horizontal-align:            0.5;
+    vertical-align:              0.5;
+    str:                         "  Now Playing"; 
+    font:                        "JetBrains Mono Nerd Font 14";
 }
- 
+
+middle-wrapper {
+    enabled:                     true;
+    orientation:                 horizontal;
+    spacing:                     10px;
+    background-color:            transparent;
+    expand:                      true; 
+    children:                    [ "album-art", "custom-text-box" ];
+}
+
+album-art {
+    enabled:                     true;
+    width:                       220px; 
+    height:                      220px; 
+    background-color:            @background-alt;
+    background-image:            url("/tmp/nowplaying/album_art.jpg", height);
+    border-radius:               12px;
+    expand:                      false; 
+}
+
+custom-text-box {
+    enabled:                     true;
+    expand:                      true;
+    padding:                     20px;
+    background-color:            @background-alt;
+    border-radius:               12px;
+    children:                    [ "textbox-custom" ];
+}
+
 textbox-custom {
-    expand:             true;
-    vertical-align:     0.5; 
-    horizontal-align:   0.0;
-    markup:             true;
-    font:               "JetBrains Mono Nerd Font 12";
-    text-color:                  #000000;
-    background-color:   transparent;
-    padding:            10px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    markup:                      true; 
+    font:                        "Inter 12";
+    str:                         "Loading...";
 }
 
 /*****-----(Buttons) -----*****/
@@ -66,6 +100,7 @@ listview {
     dynamic:                     true;
     reverse:                     false;    
     spacing:                     15px;
+    padding:                     10px 0px 0px 0px;
     background-color:            transparent;
     cursor:                      "default";
     expand:                      false; 
@@ -74,16 +109,16 @@ listview {
 element {
     enabled:                     true;
     padding:                     5px;
-    border-radius:               12px; 
+    border-radius:               100%; 
     cursor:                      pointer;
-    background-color:            transparent;
+    background-color:            @background-alt;
     text-color:                  @foreground;
     orientation:                 horizontal;
 }
 
 element.selected  {
-    background-color:            @selected;
-    text-color:                  @background;
+    background-color:            @hover;
+    text-color:                  @foreground;
 }
 
 element-text {

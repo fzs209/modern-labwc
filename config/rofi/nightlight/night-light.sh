@@ -8,7 +8,7 @@
 rofi_menu="$HOME/.config/rofi/nightlight/night-light.rasi"
 config_file="$HOME/.config/rofi/nightlight/night.conf"
 # notification id
-notify_id=$(if pgrep -x "swaync" >/dev/null; then echo "-h string:x-canonical-private-synchronous:nightlight"; else echo "-r 3452"; fi)
+notify_id="string:x-canonical-private-synchronous:nightlight"
 # Function to apply night-light
 apply_gamma() {
     local temp="$1"
@@ -48,7 +48,7 @@ case "$main_choice" in
 "Disable")
     # Just kill it to return to normal
     pkill -x gammastep || true
-    notify-send $notify_id "Night Light Off"
+    notify-send -h $notify_id "Night Light" "Disabled"
     ;;
 "Enable")
     target_temp=4500
@@ -58,31 +58,31 @@ case "$main_choice" in
         if [[ "$last_temp" =~ ^[0-9]+$ ]]; then
             target_temp="$last_temp"
         else
-            notify-send $notify_id "Night Light" "Config corrupted!! Using default"
+            notify-send -h $notify_id "Night Light" "Config corrupted! Using default"
         fi
     fi
     apply_gamma "$target_temp"
-    notify-send $notify_id "Night Light" "Enabled ($target_temp K)"
+    notify-send -h $notify_id "Night Light" "Enabled ($target_temp K)"
     ;;
 "Warm")
     apply_gamma 3000
-    notify-send $notify_id "Night Light" "Warm (3000K) Applied"
+    notify-send -h $notify_id "Night Light" "Warm (3000K) Applied"
     ;;
 "Neutral")
     apply_gamma 4500
-    notify-send $notify_id "Night Light" "Neutral (4500K) Applied"
+    notify-send -h $notify_id "Night Light" "Neutral (4500K) Applied"
     ;;
 *)
     # Check if the input is actually a valid number
     if [[ "$main_choice" =~ ^[0-9]+$ ]]; then
         if [[ $main_choice -ge 1000 && $main_choice -le 25000 ]]; then
             apply_gamma "$main_choice"
-            notify-send $notify_id "Night Light" "Custom value: ${main_choice}K"
+            notify-send -h $notify_id "Night Light" "Custom value: ${main_choice}K"
         else
-            notify-send $notify_id "Night Light" "Please enter value btw (1000-25000)"
+            notify-send -h $notify_id "Night Light" "Please enter value btw (1000-25000)"
         fi
     else
-        notify-send $notify_id "Night Light" "Invalid input!! Please enter digits"
+        notify-send -h $notify_id "Night Light" "Invalid input!! Please enter digits"
         exit 1
     fi
     ;;

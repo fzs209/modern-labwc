@@ -1,0 +1,18 @@
+/**
+ *
+ * Author : Aditya Shakya (adi1090x)
+ * Github : @adi1090x
+ * 
+ * Colors
+ **/
+
+* {
+border: rgba(47, 46, 68, 1);
+    background:     rgba(30, 29, 47, 0.75);
+    background-alt: rgba(40, 40, 57, 0.60);
+    foreground:     rgba(217, 224, 238, 1.0);
+    selected:       rgba(122, 162, 247, 0.85);
+    hover:          rgba(122, 162, 247, 0.20);
+    active:         rgba(171, 233, 179, 1.0);
+    urgent:         rgba(242, 143, 173, 1.0);
+}

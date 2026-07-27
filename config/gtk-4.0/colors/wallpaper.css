@@ -1,23 +1,23 @@
 /* --- matugen gtk4-colors.css --- */
 
-@define-color accent_color #dcc66e;
-@define-color accent_fg_color #221b00;
-@define-color accent_bg_color #dcc66e;
-@define-color window_bg_color #fff9ee;
-@define-color window_fg_color #1e1b13;
-@define-color headerbar_bg_color @window_bg_color;
-@define-color headerbar_fg_color @window_fg_color;
-@define-color popover_bg_color @window_bg_color;
-@define-color popover_fg_color @window_fg_color;
+@define-color accent_color #90d5ae;
+@define-color accent_fg_color #002112;
+@define-color accent_bg_color #90d5ae;
+@define-color window_bg_color #f6fbf4;
+@define-color window_fg_color #171d19;
 @define-color view_bg_color @window_bg_color;
 @define-color view_fg_color @window_fg_color;
-@define-color card_bg_color @window_bg_color;
-@define-color card_fg_color @window_fg_color;
+@define-color headerbar_bg_color @window_bg_color;
+@define-color headerbar_fg_color @window_fg_color;
+@define-color card_bg_color #f0f5ee;
+@define-color card_fg_color #171d19;
+@define-color popover_bg_color @card_bg_color;
+@define-color popover_fg_color @card_fg_color;
 @define-color sidebar_bg_color @window_bg_color;
 @define-color sidebar_fg_color @window_fg_color;
 @define-color sidebar_backdrop_color @window_bg_color;
 @define-color sidebar_border_color @border;
-@define-color button #e9e2d4;
-@define-color border #dcc66e80;
+@define-color button #dfe4de;
+@define-color border #c0c9c1;
 @define-color accent_hover_glass color-mix(in srgb, @accent_bg_color 15%, transparent);
 @define-color accent_selected_glass color-mix(in srgb, @accent_bg_color 30%, transparent);
