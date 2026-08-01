@@ -184,8 +184,10 @@ if [ "$cache_min_mb" -gt "$cache_max_mb" ]; then
     echo "[!] Fixing cache values: min ($cache_min_mb) > max ($cache_max_mb)" >&2
     notify-send -t 6000 "󰀦    Fixing cache values" "min ($cache_min_mb) > max ($cache_max_mb)"
     
-    # Cap the min cache so it equals the max cache
-    cache_min_mb="$cache_max_mb"
+    # Swap values to ensure min is less than max
+    temp=$cache_min_mb
+    cache_min_mb=$cache_max_mb
+    cache_max_mb=$temp
 fi
 
 # Player to use
@@ -297,6 +299,12 @@ settings_window() {
                     if [[ "$cache_input" =~ ^([0-9]+)(mb|MB|Mb)?\ +([0-9]+)(mb|MB|Mb)?$ ]]; then
                         local min_mb="${BASH_REMATCH[1]}"
                         local max_mb="${BASH_REMATCH[3]}"
+                        # Swap values if min is greater than max
+                        [[ "$min_mb" -gt "$max_mb" ]] && {
+                            local temp=$min_mb
+                            min_mb=$max_mb
+                            max_mb=$temp
+                        }                        
                         
                         sed -i "s/^cache_min_mb=.*/cache_min_mb=$min_mb/" "$config_file"
                         sed -i "s/^cache_max_mb=.*/cache_max_mb=$max_mb/" "$config_file"
